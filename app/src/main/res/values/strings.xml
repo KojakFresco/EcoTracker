@@ -2,4 +2,9 @@
     <string name="app_name">EcoTracker</string>
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
+
+    <string name="back4app_server_url">https://parseapi.back4app.com/</string>
+
+    <string name="back4app_app_id">wlhCpKHwTlLXMBoLGbaDn7sdpwBSC2pntFmlBtv6</string>
+    <string name="back4app_client_key">LZUUGrptMP88338pIyPz8waY4KSY4KWxaWMQPHSV</string>
 </resources>

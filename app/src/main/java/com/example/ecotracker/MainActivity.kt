@@ -10,11 +10,17 @@ import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import com.parse.GetCallback
+import com.parse.ParseException
+import com.parse.ParseObject
+import com.parse.ParseQuery
+import com.parse.SaveCallback
 import java.time.LocalDateTime
 import java.time.ZoneId
 import java.time.ZoneOffset
 import java.time.ZonedDateTime
 import java.time.format.DateTimeFormatter
+import kotlin.reflect.typeOf
 
 class MainActivity : AppCompatActivity() {
     var counter = 0
@@ -23,7 +29,6 @@ class MainActivity : AppCompatActivity() {
 //    var menuFragment: MainFragment = MainFragment()
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        //TODO: push to mai gitlab
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContentView(R.layout.activity_main)
@@ -32,17 +37,21 @@ class MainActivity : AppCompatActivity() {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
             insets
         }
+        var userId : String
+
         val label: TextView = findViewById(R.id.label)
-        val button: Button = findViewById(R.id.updateButton)
+        val updateButton: Button = findViewById(R.id.updateButton)
+        val saveButton: Button = findViewById(R.id.saveButton)
         var lastTime: ZonedDateTime
 
         pref = getSharedPreferences("TABLE", MODE_PRIVATE)
+        userId = pref?.getString("userId", "null")!!
         counter = pref?.getInt("counter", 0)!!
-        Log.d("pPrive", counter.toString())
+        Log.d(LOG_LABEL, counter.toString())
         label.text = "Вы помогали экологии $counter дней!"
         lastTime = loadDate("lastTime")
 
-        button.setOnClickListener {
+        updateButton.setOnClickListener {
             val time = ZonedDateTime.now(ZoneId.systemDefault())
             if (time.dayOfYear > lastTime.dayOfYear && time.year >= lastTime.year) {
                 counter+=1
@@ -60,6 +69,45 @@ class MainActivity : AppCompatActivity() {
                     Toast.LENGTH_SHORT).show()
         }
 
+        saveButton.setOnClickListener {
+            val query = ParseQuery.getQuery<ParseObject?>("Streak")
+            query.getInBackground(
+                userId,
+                GetCallback { streak: ParseObject?, e: ParseException? ->
+                    if (e == null) {
+                        streak!!.put("streak", counter)
+                        streak.saveInBackground(SaveCallback { e1: ParseException? ->
+                            if (e1 == null) {
+                                Toast.makeText(this, "Стрик сохранён",
+                                    Toast.LENGTH_SHORT).show()
+                            } else {
+                                Toast.makeText(this, "Error occured",
+                                    Toast.LENGTH_SHORT).show()
+                                Log.e(LOG_LABEL, "Error updating object: " + e1.message)
+                            }
+                        })
+                    } else {
+                        val streak = ParseObject("Streak")
+                        streak.put("user", "admin")
+                        streak.put("streak", counter)
+                        streak.saveInBackground(SaveCallback { e1: ParseException? ->
+                            if (e1 == null) {
+                                userId = streak.objectId
+                                saveString("userId", userId)
+                                Toast.makeText(this, "Стрик сохранён",
+                                    Toast.LENGTH_SHORT).show()
+                            } else {
+                                Toast.makeText(this, "Error occured",
+                                    Toast.LENGTH_SHORT).show()
+                                Log.e(LOG_LABEL, "Error updating object: " + e1.message)
+                            }})
+                            Toast.makeText(this, "Error occured",
+                                Toast.LENGTH_SHORT).show()
+                        Log.e(LOG_LABEL, "Error retrieving object: " + e.message)
+                    }
+                })
+        }
+
 //        getSupportFragmentManager().beginTransaction()
 //            .replace(R.id.main_fragment, menuFragment, "menu").commit()
     }
@@ -69,20 +117,25 @@ class MainActivity : AppCompatActivity() {
         editor?.apply()
     }
 
+    fun saveString(name : String, str : String) {
+        val editor = pref?.edit()
+        editor?.putString(name, str)
+        editor?.apply()
+    }
     fun saveDate(name: String, date : ZonedDateTime) {
         val editor = pref?.edit()
         val j: String = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")
             .withZone(ZoneId.systemDefault()).format(date)
         editor?.putString(name, j)
         editor?.apply()
-        Log.d("pPrive", "load in save " + pref?.getString(name, null))
+        Log.d(LOG_LABEL, "load in save " + pref?.getString(name, null))
     }
 
     fun loadDate(name: String): ZonedDateTime {
         val j = pref?.getString(name, null)
-        Log.d("pPrive", "load in load $j")
+        Log.d(LOG_LABEL, "load in load $j")
         if (j == null) {
-            Log.e("pPrive", "load error")
+            Log.e(LOG_LABEL, "load error")
             return ZonedDateTime.now(ZoneId.systemDefault()).minusDays(1)
         } else {
             return LocalDateTime.parse(j.replace(" ", "T")).atOffset(ZoneOffset.UTC).atZoneSameInstant(ZoneId.systemDefault())
