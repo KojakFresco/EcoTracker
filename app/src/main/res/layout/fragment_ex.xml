@@ -13,6 +13,7 @@
         android:layout_gravity="center"
         android:layout_marginTop="50dp"
         android:text="Вы помогали экологии 0 дней!"
+        android:textColor="@color/black"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
