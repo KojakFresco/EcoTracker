@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="my_habits">Мои привычки</string>
+    <string name="statistics">Статистика</string>
+    <string name="rating">Рейтинг</string>
+    <string name="profile">Профиль</string>
+    <string name="save">Сохранить</string>
+    <string name="redact_habits">Редактировать привычки</string>
+</resources>

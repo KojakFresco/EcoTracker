@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <item android:id="@+id/home_page"
+        android:title="@string/my_habits"
+        android:icon="@drawable/icon_home"
+        app:showAsAction="ifRoom">
+    </item>
+
+    <item android:id="@+id/stats_page"
+        android:title="@string/statistics"
+        android:icon="@drawable/icon_stats"
+        app:showAsAction="ifRoom">
+    </item>
+
+    <item android:id="@+id/rating_page"
+        android:title="@string/rating"
+        android:icon="@drawable/icon_rating"
+        app:showAsAction="ifRoom">
+    </item>
+
+    <item android:id="@+id/profile_page"
+        android:title="@string/profile"
+        android:icon="@drawable/icon_settings"
+        app:showAsAction="ifRoom">
+    </item>
+</menu>

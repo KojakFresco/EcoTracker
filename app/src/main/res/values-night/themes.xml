@@ -1,7 +1,33 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
     <!-- Base application theme. -->
     <style name="Base.Theme.EcoTracker" parent="Theme.Material3.DayNight.NoActionBar">
-        <!-- Customize your dark theme here. -->
-        <!-- <item name="colorPrimary">@color/my_dark_primary</item> -->
+        <!-- Customize your light theme here. -->
+        <item name="android:windowBackground">@color/background</item>
+        <item name="android:textColor">@color/white</item>
+        <item name="android:statusBarColor">@color/main</item>
+        <item name="colorPrimary">@color/main</item>
+        <item name="itemActiveIndicatorStyle">@color/white</item>
+        <item name="background">@color/white</item>
+        <item name="android:textColorSecondary">@color/pale_white</item>
+        <item name="alertDialogTheme">@style/AppTheme.Dialog</item>
+        <!-- <item name="colorPrimary">@color/my_light_primary</item> -->
+    </style>
+
+    <style name="Indicator" parent="Widget.Material3.BottomNavigationView.ActiveIndicator">
+        <item name="android:color">#FFFFFF</item>
+    </style>
+
+    <style name="Theme.EcoTracker" parent="Base.Theme.EcoTracker" />
+
+    <!--may be redundant-->
+    <style name="AppTheme.Dialog" parent="Theme.MaterialComponents.DayNight.Dialog">
+        <item name="android:textColor">@color/white</item>
+        <item name="colorPrimary">@color/black</item>
+    </style>
+
+    <style name="FabShape" parent="ShapeAppearance.Material3.SmallComponent">
+
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSize">24dp</item>
     </style>
 </resources>

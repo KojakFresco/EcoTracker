@@ -1,10 +1,17 @@
 <resources>
-    <string name="app_name">EcoTracker</string>
+    <string name="my_habits">My habits</string>
+    <string name="statistics">Statistics</string>
+    <string name="rating">Rating</string>
+
+    <string name="app_name" translatable="false">EcoTracker</string>
     <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="hello_blank_fragment" translatable="false">Hello blank fragment</string>
 
-    <string name="back4app_server_url">https://parseapi.back4app.com/</string>
+    <string name="back4app_server_url" translatable="false">https://parseapi.back4app.com/</string>
 
-    <string name="back4app_app_id">wlhCpKHwTlLXMBoLGbaDn7sdpwBSC2pntFmlBtv6</string>
-    <string name="back4app_client_key">LZUUGrptMP88338pIyPz8waY4KSY4KWxaWMQPHSV</string>
+    <string name="back4app_app_id" translatable="false">wlhCpKHwTlLXMBoLGbaDn7sdpwBSC2pntFmlBtv6</string>
+    <string name="back4app_client_key" translatable="false">LZUUGrptMP88338pIyPz8waY4KSY4KWxaWMQPHSV</string>
+    <string name="profile">Profile</string>
+    <string name="save">Save</string>
+    <string name="redact_habits">Redact habits</string>
 </resources>
