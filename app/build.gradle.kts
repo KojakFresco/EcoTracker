@@ -56,4 +56,5 @@ dependencies {
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
     implementation("com.github.parse-community.Parse-SDK-Android:parse:1.18.5")
+    implementation("androidx.viewpager2:viewpager2:1.0.0")
 }

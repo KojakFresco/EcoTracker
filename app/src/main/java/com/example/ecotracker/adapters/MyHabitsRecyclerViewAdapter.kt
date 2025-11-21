@@ -15,8 +15,21 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.ecotracker.MyHabitsRecyclerViewAdapter.MyViewHolder
 import com.example.ecotracker.fragments.MyHabitsFragment
 
+data class HabitItem(var id: String, var name: String, var description: String, var isCompleted: Boolean?)
+
 class MyHabitsRecyclerViewAdapter(var context: Context?, var habitItems: ArrayList<HabitItem>) :
     RecyclerView.Adapter<MyViewHolder?>() {
+    interface OnHabitStateChangedListener {
+        fun onCardStateChanged(habitId: String, isChecked: Boolean?)
+    }
+
+    private var listener: OnHabitStateChangedListener? = null
+
+    // 2. Создаем метод для установки listener'а из фрагмента
+    fun setOnHabitStateChangedListener(listener: OnHabitStateChangedListener) {
+        this.listener = listener
+    }
+
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MyViewHolder {
         // This is where you inflate the layout (giving a look to our rows)
         val inflater = LayoutInflater.from(context)
@@ -27,11 +40,11 @@ class MyHabitsRecyclerViewAdapter(var context: Context?, var habitItems: ArrayLi
     override fun onBindViewHolder(holder: MyViewHolder, position: Int) {
         // Assigning values to the views we created in the recycler_view_row layout file
         // based on the position of the recycler view
-        val item: HabitItem = habitItems.get(position)
-        holder.name.setText(item.name)
-        holder.description.setText(item.description)
-        holder.checkBox.setChecked(item.isCompleted!!)
-        //TODO: optimize and prettify this code
+        val item: HabitItem = habitItems[position]
+
+        holder.name.text = item.name
+        holder.description.text = item.description
+        holder.checkBox.isChecked = item.isCompleted!!
 
         if (item.isCompleted!!){
             holder.setAlpha(0.5f)
@@ -40,7 +53,7 @@ class MyHabitsRecyclerViewAdapter(var context: Context?, var habitItems: ArrayLi
         }
 
         holder.checkBox.setOnClickListener(View.OnClickListener {
-            item.isCompleted = holder.checkBox.isChecked()
+            item.isCompleted = holder.checkBox.isChecked
             saveHabitById(item.id, item.isCompleted!!)
 
             if (item.isCompleted!!){
@@ -48,6 +61,7 @@ class MyHabitsRecyclerViewAdapter(var context: Context?, var habitItems: ArrayLi
             } else {
                 holder.setAlpha(1f)
             }
+            listener?.onCardStateChanged(habitItems[position].id, item.isCompleted)
         })
     }
 
@@ -80,16 +94,17 @@ class MyHabitsRecyclerViewAdapter(var context: Context?, var habitItems: ArrayLi
 
 
         init {
-            name = itemView.findViewById<TextView?>(R.id.name)
-            description = itemView.findViewById<TextView?>(R.id.description)
-            checkBox = itemView.findViewById<CheckBox?>(R.id.checkBox)
-            cardView = itemView.findViewById<CardView?>(R.id.cardView)
+            name = itemView.findViewById<TextView>(R.id.name)
+            description = itemView.findViewById<TextView>(R.id.description)
+            checkBox = itemView.findViewById<CheckBox>(R.id.checkBox)
+            cardView = itemView.findViewById<CardView>(R.id.cardView)
         }
 
         fun setAlpha(a: Float) {
             name.alpha = a
             description.alpha = a
             cardView.alpha = a
+            checkBox.alpha = a
         }
     }
 }

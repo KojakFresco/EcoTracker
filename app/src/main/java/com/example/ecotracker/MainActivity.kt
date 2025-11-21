@@ -1,6 +1,9 @@
 package com.example.ecotracker
 
+import android.Manifest
 import android.content.SharedPreferences
+import android.content.pm.PackageManager
+import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import androidx.activity.enableEdgeToEdge
@@ -19,6 +22,11 @@ import java.time.format.DateTimeFormatter
 import androidx.core.content.edit
 
 class MainActivity : AppCompatActivity() {
+    val permissions: Array<String> = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+        arrayOf(Manifest.permission.POST_NOTIFICATIONS)
+    } else {
+        emptyArray()
+    }
     lateinit var userId : String
     lateinit var fm: FragmentManager
     var pref : SharedPreferences? = null
@@ -36,6 +44,13 @@ class MainActivity : AppCompatActivity() {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, 0)
             insets
         }
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            if (checkSelfPermission(permissions[0]) != PackageManager.PERMISSION_GRANTED) {
+                requestPermissions(permissions, 200)
+            }
+        }
+
         fm = supportFragmentManager
 
         pref = getSharedPreferences("TABLE", MODE_PRIVATE)

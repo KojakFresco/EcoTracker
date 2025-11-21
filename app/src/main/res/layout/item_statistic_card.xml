@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    app:cardCornerRadius="24dp"
+    app:cardBackgroundColor="#E8F5E9"
+    app:cardElevation="0dp"
+    android:layout_marginHorizontal="32dp"
+    android:layout_marginVertical="16dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:gravity="center_horizontal"
+        android:paddingVertical="50dp">
+
+        <TextView
+            android:id="@+id/tvStatisticTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/black"
+            android:textSize="22sp"
+            tools:text="Сэкономлено воды" />
+
+        <ImageView
+            android:id="@+id/ivStatisticIcon"
+            android:layout_width="200dp"
+            android:layout_height="200dp"
+            tools:src="@drawable/icon_home" />
+
+        <TextView
+            android:id="@+id/tvStatisticValue"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:textColor="@color/black"
+            android:textSize="28sp"
+            android:textStyle="bold"
+            tools:text="525 литров" />
+
+        <TextView
+            android:id="@+id/tvStatisticSubtitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:textColor="@android:color/darker_gray"
+            android:textSize="14sp"
+            tools:text="Это 26 полных ванн" />
+
+    </LinearLayout>
+
+</com.google.android.material.card.MaterialCardView>
