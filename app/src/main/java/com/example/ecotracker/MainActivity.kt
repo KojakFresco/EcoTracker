@@ -66,6 +66,10 @@ class MainActivity : AppCompatActivity() {
         editor?.apply()
     }
 
+    fun loadInt(name : String) : Int? {
+        return pref?.getInt(name, 0)
+    }
+
     fun saveString(name : String, str : String) {
         val editor = pref?.edit()
         editor?.putString(name, str)

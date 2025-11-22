@@ -7,7 +7,6 @@
     android:background="@color/white"
     android:padding="16dp">
 
-    <!-- Заголовок -->
     <TextView
         android:id="@+id/title"
         android:layout_width="wrap_content"
@@ -19,7 +18,6 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <!-- Кнопка "Закрыть" (Крестик) -->
     <ImageView
         android:id="@+id/close_button"
         android:layout_width="32dp"
@@ -42,9 +40,8 @@
 <!--        app:layout_constraintStart_toStartOf="parent"-->
 <!--        app:layout_constraintTop_toBottomOf="@id/tvTitle" />-->
 
-    <!-- Список привычек -->
     <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/rvHabitsToEdit"
+        android:id="@+id/habits_recycler"
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:layout_marginTop="16dp"
@@ -55,7 +52,6 @@
         app:layout_constraintTop_toBottomOf="@id/title"
         tools:listitem="@layout/habit_edit_item" />
 
-    <!-- Кнопка Сохранить -->
     <com.google.android.material.button.MaterialButton
         android:id="@+id/btnSave"
         android:layout_width="0dp"

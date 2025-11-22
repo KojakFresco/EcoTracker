@@ -42,6 +42,7 @@ class MyHabitsFragment : Fragment(), MyHabitsRecyclerViewAdapter.OnHabitStateCha
 
         val recyclerView: RecyclerView = binding.recycler
         setUpHabits()
+        doneHabits = 0
         for (item in habitsList) {
             if (item.isCompleted!!) {
                 doneHabits++

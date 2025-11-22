@@ -6,4 +6,9 @@
     <string name="profile">Профиль</string>
     <string name="save">Сохранить</string>
     <string name="redact_habits">Редактировать привычки</string>
+    <string name="your_level">Ваш уровень</string>
+    <string name="xp_amount">Общий опыт</string>
+    <string name="days">дней</string>
+    <string name="current_streak">Текущая серия</string>
+    <string name="your_record">Ваш рекорд</string>
 </resources>

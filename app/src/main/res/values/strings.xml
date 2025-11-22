@@ -28,4 +28,9 @@
     <string name="attachment_summary_on">Automatically download attachments for incoming emails
     </string>
     <string name="attachment_summary_off">Only download attachments when manually requested</string>
+    <string name="your_level">Your level</string>
+    <string name="xp_amount">XP amount</string>
+    <string name="days">days</string>
+    <string name="current_streak">Current streak</string>
+    <string name="your_record">Your record</string>
 </resources>

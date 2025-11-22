@@ -25,7 +25,6 @@ class MyHabitsRecyclerViewAdapter(var context: Context?, var habitItems: ArrayLi
 
     private var listener: OnHabitStateChangedListener? = null
 
-    // 2. Создаем метод для установки listener'а из фрагмента
     fun setOnHabitStateChangedListener(listener: OnHabitStateChangedListener) {
         this.listener = listener
     }

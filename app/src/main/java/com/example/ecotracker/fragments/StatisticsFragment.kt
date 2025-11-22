@@ -16,6 +16,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.ecotracker.HabitItem
 import com.example.ecotracker.LOG_LABEL
+import com.example.ecotracker.MainActivity
 import com.example.ecotracker.MyHabitsRecyclerViewAdapter
 import com.example.ecotracker.R
 import com.example.ecotracker.adapters.StatisticItem
@@ -60,20 +61,20 @@ class StatisticsFragment : Fragment() {
         )
 
         binding.xpLabel.text = SpannableStringBuilder()
-            .append("Your level: ")
+            .append(getString(R.string.your_level) + ": ")
             .bold {scale(1.2f) {color(ContextCompat.getColor(context!!, R.color.green_align))
             {append(12.toString())} }}
-            .append("\nXP amount: ")
+            .append("\n" + getString(R.string.xp_amount) + ": ")
             .scale(1.2f) {color(ContextCompat.getColor(context!!, R.color.light_green_align))
             {append(1142.toString() + " XP")} }
 
         binding.streakLabel.text = SpannableStringBuilder()
-            .append("Actual streak: ")
+            .append(getString(R.string.current_streak) + ": ")
             .color(ContextCompat.getColor(context!!, R.color.red_align))
-            {append(String.format(Locale.getDefault(), "%3d", 7))}
-            .append(" days\nYour record:")
-            .append(String.format(Locale.getDefault(), "%6d", 11))
-            .append(" days")
+            {append(String.format(Locale.getDefault(), "%3d", (activity as MainActivity).loadInt("counter")))}
+            .append(" " + getString(R.string.days) + "\n" + getString(R.string.your_record) + ": ")
+            .append(String.format(Locale.getDefault(), "%6d", (activity as MainActivity).loadInt("counter")))
+            .append(" " + getString(R.string.days))
 
         val adapter = StatisticsCardAdapter(statisticItems)
         binding.viewPagerStatistics.adapter = adapter
