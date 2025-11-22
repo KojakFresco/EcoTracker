@@ -3,6 +3,8 @@ package com.example.ecotracker
 import android.content.Context
 import android.content.Context.MODE_PRIVATE
 import android.content.SharedPreferences
+import android.os.Handler
+import android.os.Looper
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -71,8 +73,7 @@ class MyHabitsRecyclerViewAdapter(var context: Context?, var habitItems: ArrayLi
 
     fun saveHabitById(id : String, isDone : Boolean) {
         try {
-            val sp: SharedPreferences? = context?.getSharedPreferences("HABITS", MODE_PRIVATE)
-
+            val sp: SharedPreferences? = context?.getSharedPreferences("HABITS_IN_USE", MODE_PRIVATE)
             sp?.edit {
                 this.putBoolean(id, isDone)
             }

@@ -25,6 +25,12 @@ class EditHabitsRecyclerViewAdapter(var context: Context?, var habitItems: Array
     override fun onBindViewHolder(holder: EditHabitsViewHolder, position: Int) {
         holder.name.text = habitItems[position].name
 
+        if (habitItems[position].isAdded!!) {
+            holder.addButton.setImageResource(R.drawable.icon_close)
+        } else {
+            holder.addButton.setImageResource(R.drawable.icon_plus)
+        }
+
         holder.addButton.setOnClickListener(View.OnClickListener {
             if (habitItems[position].isAdded!!) {
                 habitItems[position].isAdded = false

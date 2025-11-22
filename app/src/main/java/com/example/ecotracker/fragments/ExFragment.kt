@@ -12,7 +12,6 @@ import android.widget.Toast
 import com.example.ecotracker.LOG_LABEL
 import com.example.ecotracker.MainActivity
 import com.example.ecotracker.databinding.FragmentExBinding
-import com.example.ecotracker.databinding.FragmentMainBinding
 import com.parse.GetCallback
 import com.parse.ParseException
 import com.parse.ParseObject
@@ -21,26 +20,10 @@ import com.parse.SaveCallback
 import java.time.ZoneId
 import java.time.ZonedDateTime
 
-// TODO: Rename parameter arguments, choose names that match
-// the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-private const val ARG_PARAM1 = "param1"
-private const val ARG_PARAM2 = "param2"
-
 class ExFragment : Fragment() {
-    // TODO: Rename and change types of parameters
     var counter = 0
     lateinit var userId: String
-    private var param1: String? = null
-    private var param2: String? = null
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-
-        arguments?.let {
-            param1 = it.getString(ARG_PARAM1)
-            param2 = it.getString(ARG_PARAM2)
-        }
-    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -85,6 +68,9 @@ class ExFragment : Fragment() {
                     if (e == null) {
                         streak!!.put("streak", counter)
                         streak.saveInBackground(SaveCallback { e1: ParseException? ->
+                            if (!isAdded) {
+                                return@SaveCallback
+                            }
                             if (e1 == null) {
                                 Toast.makeText(activity, "Стрик сохранён",
                                     Toast.LENGTH_SHORT).show()
@@ -99,6 +85,9 @@ class ExFragment : Fragment() {
                         streak.put("user", "admin")
                         streak.put("streak", counter)
                         streak.saveInBackground(SaveCallback { e1: ParseException? ->
+                            if (!isAdded) {
+                                return@SaveCallback
+                            }
                             if (e1 == null) {
                                 userId = streak.objectId
                                 (activity as MainActivity).saveString("userId", userId)
@@ -109,8 +98,6 @@ class ExFragment : Fragment() {
                                     Toast.LENGTH_SHORT).show()
                                 Log.e(LOG_LABEL, "Error updating object: " + e1.message)
                             }})
-                        Toast.makeText(activity, "Error occured",
-                            Toast.LENGTH_SHORT).show()
                         Log.e(LOG_LABEL, "Error retrieving object: " + e.message)
                     }
                 })
@@ -118,6 +105,7 @@ class ExFragment : Fragment() {
 
         return binding.root
     }
+
 
 //    companion object {
 //        /**

@@ -7,6 +7,7 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.content.edit
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -15,6 +16,7 @@ import com.example.ecotracker.LOG_LABEL
 import com.example.ecotracker.MyHabitsRecyclerViewAdapter
 import com.example.ecotracker.databinding.FragmentMyHabitsBinding
 import com.example.ecotracker.habitsDescriptions
+import com.example.ecotracker.habitsIDs
 import com.example.ecotracker.habitsNames
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import kotlin.math.abs
@@ -59,6 +61,17 @@ class MyHabitsFragment : Fragment(), MyHabitsRecyclerViewAdapter.OnHabitStateCha
         addButton.setOnClickListener {
             EditHabitsFragment.newInstance().show(childFragmentManager, EditHabitsFragment.TAG)
         }
+
+        childFragmentManager.setFragmentResultListener("requestKey", this) { requestKey, bundle ->
+
+            val result = bundle.getBoolean("habitsUpdated")
+            if (result) {
+                Log.d(LOG_LABEL, "Получен сигнал от EditHabitsFragment. Обновляем список привычек...")
+                setUpHabits()
+                myHabitsAdapter.notifyDataSetChanged()
+                updateDoneHabitsCount()
+            }
+        }
     }
 
     override fun onCardStateChanged(habitId: String, isChecked: Boolean?) {
@@ -69,7 +82,6 @@ class MyHabitsFragment : Fragment(), MyHabitsRecyclerViewAdapter.OnHabitStateCha
         }
 
         if (isChecked!!) {
-            doneHabits++
             for (i in habitsList.size - 1 downTo 0) {
                 if (habitsList[ind].id > habitsList[i].id || !habitsList[i].isCompleted!! ||ind == i) {
                     moveHabitItem(ind, i)
@@ -77,7 +89,6 @@ class MyHabitsFragment : Fragment(), MyHabitsRecyclerViewAdapter.OnHabitStateCha
                 }
             }
         } else {
-            doneHabits--
             for (i in 0 until habitsList.size) {
                 if (habitsList[ind].id < habitsList[i].id || habitsList[i].isCompleted!! ||ind == i) {
                     moveHabitItem(ind, i)
@@ -85,7 +96,16 @@ class MyHabitsFragment : Fragment(), MyHabitsRecyclerViewAdapter.OnHabitStateCha
                 }
             }
         }
+        updateDoneHabitsCount()
+    }
 
+    private fun updateDoneHabitsCount() {
+        doneHabits = 0
+        for (item in habitsList) {
+            if (item.isCompleted!!) {
+                doneHabits++
+            }
+        }
         binding.infoLabel.text = "Сегодня: $doneHabits из ${habitsList.size} привычек"
     }
 
@@ -116,10 +136,18 @@ class MyHabitsFragment : Fragment(), MyHabitsRecyclerViewAdapter.OnHabitStateCha
     }
 
     private fun setUpHabits() {
-        if (habitsList.isEmpty()) {
-
-            for (i in 0..2) {
-                habitsList.add(HabitItem(i.toString(), habitsNames[i], habitsDescriptions[i], loadHabitById(i.toString())))
+        habitsList.clear()
+        //TODO: add sort
+        for (id in habitsIDs) {
+            if (loadHabitById(id)!!) {
+                habitsList.add(
+                    HabitItem(
+                        id,
+                        habitsNames[id]!!,
+                        habitsDescriptions[id]!!,
+                        loadHabitStateById(id)
+                    )
+                )
             }
         }
     }
@@ -136,5 +164,21 @@ class MyHabitsFragment : Fragment(), MyHabitsRecyclerViewAdapter.OnHabitStateCha
             Log.e(LOG_LABEL, "Load error " + e.message)
         }
         return false
+    }
+
+    fun loadHabitStateById(id : String) : Boolean? {
+        try {
+            val sp: SharedPreferences? = context?.getSharedPreferences("HABITS_IN_USE", MODE_PRIVATE)
+            return sp?.getBoolean(id, false)
+            Log.d(LOG_LABEL, "Load success, id: $id")
+        } catch (e: Exception) {
+            Log.e(LOG_LABEL, "Load Error " + e.message)
+        }
+        return false
+    }
+
+    override fun onStart() {
+        setUpHabits()
+        super.onStart()
     }
 }

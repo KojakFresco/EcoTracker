@@ -60,6 +60,7 @@ class MainActivity : AppCompatActivity() {
         transaction.replace(R.id.fragmentContainer, MainFragment(), "main").commit()
 
     }
+
     fun saveInt(name : String, res : Int) {
         val editor = pref?.edit()
         editor?.putInt(name, res)
