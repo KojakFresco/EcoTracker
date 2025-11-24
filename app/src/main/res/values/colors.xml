@@ -11,4 +11,9 @@
     <color name="red_align">#FFD32F2F</color>
     <color name="green_align">#36A936</color>
     <color name="light_green_align">#BF36A936</color>
+
+    <!-- Цвета для рейтинга -->
+    <color name="gold">#FFD700</color>
+    <color name="silver">#C0C0C0</color>
+    <color name="bronze">#CD7F32</color>
 </resources>
