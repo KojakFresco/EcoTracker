@@ -9,11 +9,14 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.cardview.widget.CardView
 import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.core.content.ContextCompat
+import androidx.core.view.marginTop
 import androidx.recyclerview.widget.RecyclerView
 import com.example.ecotracker.HabitItem
 import com.example.ecotracker.R
+import com.google.android.material.internal.ViewUtils.dpToPx
 
-data class RatingItem(var place: Int, var picture: Bitmap, var name: String, var xp: Int, var level: Int)
+data class RatingItem(var place: Int, var pictureId: Int, var name: String, var xp: Int, var level: Int)
 class RatingRecyclerViewAdapter(var context: Context?, var ratingItems: ArrayList<RatingItem>) : RecyclerView.Adapter<RatingRecyclerViewAdapter.RatingViewHolder?>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RatingViewHolder {
@@ -25,25 +28,27 @@ class RatingRecyclerViewAdapter(var context: Context?, var ratingItems: ArrayLis
     override fun onBindViewHolder(holder: RatingViewHolder, position: Int) {
         val item: RatingItem = ratingItems[position]
 
-        holder.place.text = item.place.toString()
-        holder.picture.setImageBitmap(item.picture)
+        holder.place.text = context?.getString(R.string.place_format, item.place)
+        holder.picture.setImageResource(item.pictureId)
         holder.name.text = item.name
-        holder.xp.text = item.xp.toString()
-        holder.level.text = item.level.toString()
+        holder.xp.text = context?.getString(R.string.xp_format, item.xp)
+        holder.level.text = context?.getString(R.string.level_format, item.level)
 
-//        if (position == 1 && item.place > 8) {
-//            holder.card.margin = 10dp
-//        }
-
+        holder.place.setTextColor(ContextCompat.getColor(context!!, R.color.black))
 
     }
+
+//    private fun dpToPx(dp: Int): Int {
+//        val density = context?.resources?.displayMetrics?.density ?: 1.0f
+//        return (dp * density).toInt()
+//    }
 
     override fun getItemCount(): Int {
         return ratingItems.size
     }
 
     class RatingViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        // var card: CardView
+        var card: CardView
         var place: TextView
         var picture: ImageView
         var name: TextView
@@ -51,6 +56,7 @@ class RatingRecyclerViewAdapter(var context: Context?, var ratingItems: ArrayLis
         var level: TextView
 
         init {
+            card = itemView.findViewById<CardView>(R.id.cardView)
             place = itemView.findViewById<TextView>(R.id.position)
             picture = itemView.findViewById<ImageView>(R.id.avatar)
             name = itemView.findViewById<TextView>(R.id.username)

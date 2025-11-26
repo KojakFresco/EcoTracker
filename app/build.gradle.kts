@@ -57,4 +57,12 @@ dependencies {
     androidTestImplementation(libs.androidx.espresso.core)
     implementation("com.github.parse-community.Parse-SDK-Android:parse:1.18.5")
     implementation("androidx.viewpager2:viewpager2:1.0.0")
+
+    // Coroutines
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.3")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.3")
+
+    // Lifecycle-aware coroutine scopes
+    implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.6.2") // для ViewModel
+    implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.6.2")  // для Fragment/Activity
 }

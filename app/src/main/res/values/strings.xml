@@ -2,6 +2,7 @@
     <string name="my_habits">My habits</string>
     <string name="statistics">Statistics</string>
     <string name="rating">Rating</string>
+    <string name="profile">Profile</string>
 
     <string name="app_name" translatable="false">EcoTracker</string>
     <!-- TODO: Remove or change this placeholder text -->
@@ -11,7 +12,6 @@
 
     <string name="back4app_app_id" translatable="false">wlhCpKHwTlLXMBoLGbaDn7sdpwBSC2pntFmlBtv6</string>
     <string name="back4app_client_key" translatable="false">LZUUGrptMP88338pIyPz8waY4KSY4KWxaWMQPHSV</string>
-    <string name="profile">Profile</string>
     <string name="save">Save</string>
     <string name="redact_habits">Redact habits</string>
     <!-- Preference Titles -->
@@ -33,4 +33,9 @@
     <string name="days">days</string>
     <string name="current_streak">Current streak</string>
     <string name="your_record">Your record</string>
+    <!-- ... другие ваши строки ... -->
+
+    <string name="place_format" translatable="false">#%d</string>
+    <string name="xp_format" translatable="false">%d XP</string>
+    <string name="level_format" translatable="false">%d lvl</string>
 </resources>
