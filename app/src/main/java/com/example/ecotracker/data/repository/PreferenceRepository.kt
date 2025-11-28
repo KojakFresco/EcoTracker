@@ -20,11 +20,19 @@ class PreferencesRepository @Inject constructor(
         sharedPreferences.edit().putInt(name, value).apply()
     }
 
-    fun getInt(name: String): Int = sharedPreferences.getInt(name, 0)
+    fun loadInt(name: String): Int = sharedPreferences.getInt(name, 0)
 
     fun saveString(name: String, value: String) {
         sharedPreferences.edit().putString(name, value).apply()
     }
+
+    fun saveBoolean(name: String, value: Boolean) {
+        sharedPreferences.edit().putBoolean(name, value).apply()
+    }
+
+    fun loadBoolean(name: String): Boolean = sharedPreferences.getBoolean(name, false)
+
+
 
     fun saveDate(name: String, date: ZonedDateTime) {
         val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")
@@ -32,7 +40,7 @@ class PreferencesRepository @Inject constructor(
         sharedPreferences.edit().putString(name, formatter.format(date)).apply()
     }
 
-    fun getDate(name: String): ZonedDateTime {
+    fun loadDate(name: String): ZonedDateTime {
         val dateString = sharedPreferences.getString(name, null)
         return if (dateString == null) {
             ZonedDateTime.now(ZoneId.systemDefault()).minusDays(1)

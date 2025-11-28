@@ -73,24 +73,19 @@ class MyHabitsFragment : Fragment(), MyHabitsRecyclerViewAdapter.OnHabitStateCha
         }
     }
 
-    override fun onCardStateChanged(habitId: String, isChecked: Boolean?) {
+    override fun onCardStateChanged(position: Int, isChecked: Boolean?) {
         //TODO: fix wrong amount of done habits (maybe cooldown)
-        val ind = findHabitById(habitId)
-        if (ind == -1) {
-            return
-        }
-
         if (isChecked!!) {
             for (i in habitsList.size - 1 downTo 0) {
-                if (habitsList[ind].id > habitsList[i].id || !habitsList[i].isCompleted!! ||ind == i) {
-                    moveHabitItem(ind, i)
+                if (habitsList[position].id > habitsList[i].id || !habitsList[i].isCompleted!! || position == i) {
+                    moveHabitItem(position, i)
                     break
                 }
             }
         } else {
             for (i in 0 until habitsList.size) {
-                if (habitsList[ind].id < habitsList[i].id || habitsList[i].isCompleted!! ||ind == i) {
-                    moveHabitItem(ind, i)
+                if (habitsList[position].id < habitsList[i].id || habitsList[i].isCompleted!! || position == i) {
+                    moveHabitItem(position, i)
                     break
                 }
             }
@@ -124,16 +119,6 @@ class MyHabitsFragment : Fragment(), MyHabitsRecyclerViewAdapter.OnHabitStateCha
         myHabitsAdapter.notifyItemRangeChanged(start, count)
     }
 
-    private fun findHabitById(id: String): Int {
-        for (i in 0 until habitsList.size) {
-            val habit = habitsList[i]
-            if (habit.id == id) {
-                return i
-            }
-        }
-        return -1
-    }
-
     private fun setUpHabits() {
         habitsList.clear()
         //TODO: add sort
@@ -149,10 +134,6 @@ class MyHabitsFragment : Fragment(), MyHabitsRecyclerViewAdapter.OnHabitStateCha
                 )
             }
         }
-    }
-
-    private fun addHabit(id: String, name: String, desc: String) {
-        habitsList.add(HabitItem(id, name, desc, false))
     }
 
     fun loadHabitById(id : String) : Boolean? {

@@ -19,7 +19,7 @@ data class HabitItem(var id: String, var name: String, var description: String, 
 class MyHabitsRecyclerViewAdapter(var context: Context?, var habitItems: ArrayList<HabitItem>) :
     RecyclerView.Adapter<MyViewHolder?>() {
     interface OnHabitStateChangedListener {
-        fun onCardStateChanged(habitId: String, isChecked: Boolean?)
+        fun onCardStateChanged(position: Int, isChecked: Boolean?)
     }
 
     private var listener: OnHabitStateChangedListener? = null
@@ -59,7 +59,7 @@ class MyHabitsRecyclerViewAdapter(var context: Context?, var habitItems: ArrayLi
             } else {
                 holder.setAlpha(1f)
             }
-            listener?.onCardStateChanged(habitItems[position].id, item.isCompleted)
+            listener?.onCardStateChanged(position, item.isCompleted)
         })
     }
 

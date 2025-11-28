@@ -1,4 +1,4 @@
-package com.example.ecotracker.presentation.viewmodel
+package com.example.ecotracker.presentation.viewmodels
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope

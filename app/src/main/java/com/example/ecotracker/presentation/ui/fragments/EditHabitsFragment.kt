@@ -10,6 +10,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.FrameLayout
 import androidx.core.content.edit
+import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.ecotracker.LOG_LABEL
@@ -18,15 +19,21 @@ import com.example.ecotracker.presentation.ui.adapters.NewHabitItem
 import com.example.ecotracker.databinding.FragmentEditHabitsBinding
 import com.example.ecotracker.habitsIDs
 import com.example.ecotracker.habitsNames
+import com.example.ecotracker.presentation.viewmodels.EditHabitsViewModel
 import com.google.android.material.R
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class EditHabitsFragment : BottomSheetDialogFragment() {
 
     private var _binding: FragmentEditHabitsBinding? = null
     private val binding get() = _binding!!
+
+    private val viewModel: EditHabitsViewModel by viewModels()
+
 
     private var habitsList: ArrayList<NewHabitItem> = ArrayList()
 
@@ -55,7 +62,7 @@ class EditHabitsFragment : BottomSheetDialogFragment() {
 
         binding.btnSave.setOnClickListener {
             for (item in habitsList) {
-                saveHabitStateById(item.id, item.isAdded!!)
+                viewModel.saveHabitState(item.id, item.isAdded!!)
             }
             val result = Bundle().apply {
                 putBoolean("habitsUpdated", true) // Передаем флаг, что данные обновлены
@@ -64,8 +71,6 @@ class EditHabitsFragment : BottomSheetDialogFragment() {
 
             dismiss()
         }
-
-
 
     }
 
@@ -90,34 +95,16 @@ class EditHabitsFragment : BottomSheetDialogFragment() {
         return dialog
     }
 
+    // TODO: remake this fun
     fun setUpHabitsList() {
         for (id in habitsIDs) {
-            if (!habitsList.contains(NewHabitItem(id, habitsNames[id]!!, loadHabitById(id))))
+            if (!habitsList.contains(NewHabitItem(id, habitsNames[id]!!, viewModel.loadHabitState(id))))
                 habitsList.add(
-                    NewHabitItem(id, habitsNames[id]!!, loadHabitById(id)))
+                    NewHabitItem(
+                        id,
+                        habitsNames[id]!!,
+                        viewModel.loadHabitState(id)))
         }
-    }
-
-    fun saveHabitStateById(id : String, isDone : Boolean) {
-        try {
-            val sp: SharedPreferences? = context?.getSharedPreferences("HABITS", MODE_PRIVATE)
-            sp?.edit {
-                this.putBoolean(id, isDone)
-            }
-            Log.d(LOG_LABEL, "Save success, id: $id")
-        } catch (e: Exception) {
-            Log.e(LOG_LABEL, "Save Error " + e.message)
-        }
-    }
-
-    fun loadHabitById(id : String) : Boolean? {
-        try {
-            val sp: SharedPreferences? = activity?.getSharedPreferences("HABITS", MODE_PRIVATE)
-            return sp?.getBoolean(id, false)
-        } catch (e: Exception) {
-            Log.e(LOG_LABEL, "Load error " + e.message)
-        }
-        return false
     }
 
     override fun onDestroyView() {

@@ -10,27 +10,22 @@ import androidx.core.text.bold
 import androidx.core.text.color
 import androidx.core.text.scale
 import androidx.fragment.app.Fragment
-import com.example.ecotracker.presentation.ui.activity.MainActivity
+import androidx.fragment.app.viewModels
 import com.example.ecotracker.R
 import com.example.ecotracker.presentation.ui.adapters.StatisticItem
 import com.example.ecotracker.presentation.ui.adapters.StatisticsCardAdapter
 import com.example.ecotracker.databinding.FragmentStatisticsBinding
+import com.example.ecotracker.presentation.viewmodels.StatisticsViewModel
+import dagger.hilt.android.AndroidEntryPoint
 import java.util.Locale
 
-
-// TODO: Rename parameter arguments, choose names that match
-// the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-private const val ARG_PARAM1 = "param1"
-private const val ARG_PARAM2 = "param2"
-
-/**
- * A simple [Fragment] subclass.
- * Use the [StatisticsFragment.newInstance] factory method to
- * create an instance of this fragment.
- */
+@AndroidEntryPoint
 class StatisticsFragment : Fragment() {
     private var _binding: FragmentStatisticsBinding? = null
     private val binding get() = _binding!!
+
+    private val viewModel: StatisticsViewModel by viewModels()
+
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -60,10 +55,10 @@ class StatisticsFragment : Fragment() {
 
         binding.streakLabel.text = SpannableStringBuilder()
             .append(getString(R.string.current_streak) + ": ")
-//            .color(ContextCompat.getColor(context!!, R.color.red_align))
-//            {append(String.format(Locale.getDefault(), "%3d", (activity as MainActivity).loadInt("counter")))}
+            .color(ContextCompat.getColor(requireContext(), R.color.red_align))
+            {append(String.format(Locale.getDefault(), "%3d", viewModel.getStreakCounter()))}
             .append(" " + getString(R.string.days) + "\n" + getString(R.string.your_record) + ": ")
-//            .append(String.format(Locale.getDefault(), "%6d", (activity as MainActivity).loadInt("counter")))
+            .append(String.format(Locale.getDefault(), "%6d", viewModel.getStreakRecord()))
             .append(" " + getString(R.string.days))
 
         val adapter = StatisticsCardAdapter(statisticItems)
