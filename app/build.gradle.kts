@@ -10,6 +10,11 @@ android {
     namespace = "com.example.ecotracker"
     compileSdk = 36
 
+    packaging {
+        resources {
+            excludes += "/META-INF/gradle/incremental.annotation.processors"
+        }
+    }
     defaultConfig {
         applicationId = "com.example.ecotracker"
         minSdk = 26
@@ -48,8 +53,7 @@ dependencies {
     implementation("com.google.firebase:firebase-analytics:23.0.0")
     implementation("com.google.firebase:firebase-firestore-ktx:25.1.4")
     implementation("com.google.code.gson:gson:2.13.2")
-    implementation("androidx.coordinatorlayout:coordinatorlayout:1.2.0")
-    implementation("androidx.constraintlayout:constraintlayout:2.1.4")
+    implementation("androidx.coordinatorlayout:coordinatorlayout:1.3.0")
     implementation("com.google.dagger:hilt-android:2.57.2")
     implementation("com.google.dagger:hilt-compiler:2.57.2")
     kapt("com.google.dagger:hilt-compiler:2.57.2")
@@ -66,11 +70,11 @@ dependencies {
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
-    implementation("androidx.viewpager2:viewpager2:1.0.0")
+    implementation("androidx.viewpager2:viewpager2:1.1.0")
 
     // Coroutines
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.3")
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.3")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.10.2")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.10.2")
 
     // Lifecycle-aware coroutine scopes
     implementation("androidx.navigation:navigation-fragment-ktx:2.9.6")

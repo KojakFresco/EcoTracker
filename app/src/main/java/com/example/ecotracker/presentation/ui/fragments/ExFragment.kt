@@ -10,13 +10,9 @@ import android.widget.Button
 import android.widget.TextView
 import android.widget.Toast
 import com.example.ecotracker.LOG_LABEL
+import com.example.ecotracker.data.repository.PreferencesRepository
 import com.example.ecotracker.presentation.ui.activity.MainActivity
 import com.example.ecotracker.databinding.FragmentExBinding
-import com.parse.GetCallback
-import com.parse.ParseException
-import com.parse.ParseObject
-import com.parse.ParseQuery
-import com.parse.SaveCallback
 import java.time.ZoneId
 import java.time.ZonedDateTime
 
@@ -30,78 +26,78 @@ class ExFragment : Fragment() {
         savedInstanceState: Bundle?): View? {
         val binding = FragmentExBinding.inflate(inflater, container, false)
 
-        userId = (activity as MainActivity).userId
+//        userId = (activity as MainActivity).userId
 
         val label: TextView = binding.label
         val updateButton: Button = binding.updateButton
         val saveButton: Button = binding.saveButton
         var lastTime: ZonedDateTime
-
-        counter = (activity as MainActivity).pref?.getInt("counter", 0)!!
-        Log.d(LOG_LABEL, counter.toString())
-        label.text = "Вы помогали экологии $counter дней!"
-        lastTime =(activity as MainActivity).loadDate("lastTime")
+//
+//        counter = PreferencesRepository.getInt("counter", 0)!!
+//        Log.d(LOG_LABEL, counter.toString())
+//        label.text = "Вы помогали экологии $counter дней!"
+//        lastTime =(activity as MainActivity).loadDate("lastTime")
 
         updateButton.setOnClickListener {
             val time = ZonedDateTime.now(ZoneId.systemDefault())
-            if (time.dayOfYear > lastTime.dayOfYear && time.year >= lastTime.year) {
-                counter+=1
-                val text = "Вы помогали экологии $counter дней!"
-                (activity as MainActivity).saveInt("counter", counter)
-                (activity as MainActivity).saveDate("lastTime", time)
-
-                lastTime = time
-                label.text = text
-
-                Toast.makeText(activity, "Вы молодец!",
-                    Toast.LENGTH_SHORT).show()
-            } else
-                Toast.makeText(activity, "Ты кого наобмануть пытаешься???",
-                    Toast.LENGTH_SHORT).show()
+//            if (time.dayOfYear > lastTime.dayOfYear && time.year >= lastTime.year) {
+//                counter+=1
+//                val text = "Вы помогали экологии $counter дней!"
+////                (activity as MainActivity).saveInt("counter", counter)
+////                (activity as MainActivity).saveDate("lastTime", time)
+//
+//                lastTime = time
+//                label.text = text
+//
+//                Toast.makeText(activity, "Вы молодец!",
+//                    Toast.LENGTH_SHORT).show()
+//            } else
+//                Toast.makeText(activity, "Ты кого наобмануть пытаешься???",
+//                    Toast.LENGTH_SHORT).show()
         }
 
-        saveButton.setOnClickListener {
-            val query = ParseQuery.getQuery<ParseObject?>("Streak")
-            query.getInBackground(
-                userId,
-                GetCallback { streak: ParseObject?, e: ParseException? ->
-                    if (e == null) {
-                        streak!!.put("streak", counter)
-                        streak.saveInBackground(SaveCallback { e1: ParseException? ->
-                            if (!isAdded) {
-                                return@SaveCallback
-                            }
-                            if (e1 == null) {
-                                Toast.makeText(activity, "Стрик сохранён",
-                                    Toast.LENGTH_SHORT).show()
-                            } else {
-                                Toast.makeText(activity, "Error occured",
-                                    Toast.LENGTH_SHORT).show()
-                                Log.e(LOG_LABEL, "Error updating object: " + e1.message)
-                            }
-                        })
-                    } else {
-                        val streak = ParseObject("Streak")
-                        streak.put("user", "admin")
-                        streak.put("streak", counter)
-                        streak.saveInBackground(SaveCallback { e1: ParseException? ->
-                            if (!isAdded) {
-                                return@SaveCallback
-                            }
-                            if (e1 == null) {
-                                userId = streak.objectId
-                                (activity as MainActivity).saveString("userId", userId)
-                                Toast.makeText(activity, "Стрик сохранён",
-                                    Toast.LENGTH_SHORT).show()
-                            } else {
-                                Toast.makeText(activity, "Error occured",
-                                    Toast.LENGTH_SHORT).show()
-                                Log.e(LOG_LABEL, "Error updating object: " + e1.message)
-                            }})
-                        Log.e(LOG_LABEL, "Error retrieving object: " + e.message)
-                    }
-                })
-        }
+//        saveButton.setOnClickListener {
+//            val query = ParseQuery.getQuery<ParseObject?>("Streak")
+//            query.getInBackground(
+//                userId,
+//                GetCallback { streak: ParseObject?, e: ParseException? ->
+//                    if (e == null) {
+//                        streak!!.put("streak", counter)
+//                        streak.saveInBackground(SaveCallback { e1: ParseException? ->
+//                            if (!isAdded) {
+//                                return@SaveCallback
+//                            }
+//                            if (e1 == null) {
+//                                Toast.makeText(activity, "Стрик сохранён",
+//                                    Toast.LENGTH_SHORT).show()
+//                            } else {
+//                                Toast.makeText(activity, "Error occured",
+//                                    Toast.LENGTH_SHORT).show()
+//                                Log.e(LOG_LABEL, "Error updating object: " + e1.message)
+//                            }
+//                        })
+//                    } else {
+//                        val streak = ParseObject("Streak")
+//                        streak.put("user", "admin")
+//                        streak.put("streak", counter)
+//                        streak.saveInBackground(SaveCallback { e1: ParseException? ->
+//                            if (!isAdded) {
+//                                return@SaveCallback
+//                            }
+//                            if (e1 == null) {
+//                                userId = streak.objectId
+//                                (activity as MainActivity).saveString("userId", userId)
+//                                Toast.makeText(activity, "Стрик сохранён",
+//                                    Toast.LENGTH_SHORT).show()
+//                            } else {
+//                                Toast.makeText(activity, "Error occured",
+//                                    Toast.LENGTH_SHORT).show()
+//                                Log.e(LOG_LABEL, "Error updating object: " + e1.message)
+//                            }})
+//                        Log.e(LOG_LABEL, "Error retrieving object: " + e.message)
+//                    }
+//                })
+//        }
 
         return binding.root
     }

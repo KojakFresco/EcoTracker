@@ -52,18 +52,18 @@ class StatisticsFragment : Fragment() {
 
         binding.xpLabel.text = SpannableStringBuilder()
             .append(getString(R.string.your_level) + ": ")
-            .bold {scale(1.2f) {color(ContextCompat.getColor(context!!, R.color.green_align))
+            .bold {scale(1.2f) {color(ContextCompat.getColor(requireContext(), R.color.green_align))
             {append(12.toString())} }}
             .append("\n" + getString(R.string.xp_amount) + ": ")
-            .scale(1.2f) {color(ContextCompat.getColor(context!!, R.color.light_green_align))
+            .scale(1.2f) {color(ContextCompat.getColor(requireContext(), R.color.light_green_align))
             {append(1142.toString() + " XP")} }
 
         binding.streakLabel.text = SpannableStringBuilder()
             .append(getString(R.string.current_streak) + ": ")
-            .color(ContextCompat.getColor(context!!, R.color.red_align))
-            {append(String.format(Locale.getDefault(), "%3d", (activity as MainActivity).loadInt("counter")))}
+//            .color(ContextCompat.getColor(context!!, R.color.red_align))
+//            {append(String.format(Locale.getDefault(), "%3d", (activity as MainActivity).loadInt("counter")))}
             .append(" " + getString(R.string.days) + "\n" + getString(R.string.your_record) + ": ")
-            .append(String.format(Locale.getDefault(), "%6d", (activity as MainActivity).loadInt("counter")))
+//            .append(String.format(Locale.getDefault(), "%6d", (activity as MainActivity).loadInt("counter")))
             .append(" " + getString(R.string.days))
 
         val adapter = StatisticsCardAdapter(statisticItems)
