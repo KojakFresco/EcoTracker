@@ -1,4 +1,4 @@
-package com.example.ecotracker.fragments
+package com.example.ecotracker.presentation.ui.fragments
 
 import android.os.Bundle
 import android.util.Log
@@ -10,7 +10,7 @@ import android.widget.Button
 import android.widget.TextView
 import android.widget.Toast
 import com.example.ecotracker.LOG_LABEL
-import com.example.ecotracker.MainActivity
+import com.example.ecotracker.presentation.ui.activity.MainActivity
 import com.example.ecotracker.databinding.FragmentExBinding
 import com.parse.GetCallback
 import com.parse.ParseException

@@ -1,20 +1,15 @@
-package com.example.ecotracker.adapters
+package com.example.ecotracker.presentation.ui.adapters
 
 import android.content.Context
-import android.graphics.Bitmap
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.cardview.widget.CardView
-import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
-import androidx.core.view.marginTop
 import androidx.recyclerview.widget.RecyclerView
-import com.example.ecotracker.HabitItem
 import com.example.ecotracker.R
-import com.google.android.material.internal.ViewUtils.dpToPx
 
 data class RatingItem(var place: Int, var pictureId: Int, var name: String, var xp: Int, var level: Int)
 class RatingRecyclerViewAdapter(var context: Context?, var ratingItems: ArrayList<RatingItem>) : RecyclerView.Adapter<RatingRecyclerViewAdapter.RatingViewHolder?>() {

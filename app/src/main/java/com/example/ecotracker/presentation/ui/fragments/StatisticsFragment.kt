@@ -1,8 +1,7 @@
-package com.example.ecotracker.fragments
+package com.example.ecotracker.presentation.ui.fragments
 
 import android.os.Bundle
 import android.text.SpannableStringBuilder
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -10,22 +9,13 @@ import androidx.core.content.ContextCompat
 import androidx.core.text.bold
 import androidx.core.text.color
 import androidx.core.text.scale
-import androidx.core.text.underline
 import androidx.fragment.app.Fragment
-import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
-import com.example.ecotracker.HabitItem
-import com.example.ecotracker.LOG_LABEL
-import com.example.ecotracker.MainActivity
-import com.example.ecotracker.MyHabitsRecyclerViewAdapter
+import com.example.ecotracker.presentation.ui.activity.MainActivity
 import com.example.ecotracker.R
-import com.example.ecotracker.adapters.StatisticItem
-import com.example.ecotracker.adapters.StatisticsCardAdapter
+import com.example.ecotracker.presentation.ui.adapters.StatisticItem
+import com.example.ecotracker.presentation.ui.adapters.StatisticsCardAdapter
 import com.example.ecotracker.databinding.FragmentStatisticsBinding
-import com.example.ecotracker.habitsDescriptions
-import com.example.ecotracker.habitsNames
 import java.util.Locale
-import kotlin.coroutines.Continuation
 
 
 // TODO: Rename parameter arguments, choose names that match

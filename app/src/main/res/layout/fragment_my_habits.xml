@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".fragments.MyHabitsFragment">
+    tools:context=".presentation.ui.fragments.MyHabitsFragment">
 
     <!-- Используем AppBarLayout как контейнер для заголовка -->
     <com.google.android.material.appbar.AppBarLayout

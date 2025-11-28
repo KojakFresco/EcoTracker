@@ -1,4 +1,4 @@
-package com.example.ecotracker.fragments
+package com.example.ecotracker.presentation.ui.fragments
 
 import android.content.Context.MODE_PRIVATE
 import android.content.SharedPreferences
@@ -7,7 +7,6 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.core.content.edit
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView

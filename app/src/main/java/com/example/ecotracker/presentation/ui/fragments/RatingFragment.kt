@@ -1,22 +1,16 @@
-package com.example.ecotracker.fragments
+package com.example.ecotracker.presentation.ui.fragments
 
-import android.graphics.Bitmap
-import android.graphics.BitmapFactory
 import android.os.Bundle
-import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.example.ecotracker.LOG_LABEL
 import com.example.ecotracker.R
-import com.example.ecotracker.adapters.RatingItem
-import com.example.ecotracker.adapters.RatingRecyclerViewAdapter
+import com.example.ecotracker.presentation.ui.adapters.RatingItem
+import com.example.ecotracker.presentation.ui.adapters.RatingRecyclerViewAdapter
 import com.example.ecotracker.databinding.FragmentRatingBinding
-import kotlin.concurrent.timer
-import kotlin.system.measureTimeMillis
 
 class RatingFragment : Fragment() {
     private var _binding: FragmentRatingBinding? = null

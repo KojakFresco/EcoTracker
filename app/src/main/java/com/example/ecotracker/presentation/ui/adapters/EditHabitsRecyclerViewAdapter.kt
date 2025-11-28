@@ -1,4 +1,4 @@
-package com.example.ecotracker.adapters
+package com.example.ecotracker.presentation.ui.adapters
 
 import android.content.Context
 import android.view.LayoutInflater
@@ -8,7 +8,7 @@ import android.widget.ImageButton
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.example.ecotracker.R
-import com.example.ecotracker.adapters.EditHabitsRecyclerViewAdapter.EditHabitsViewHolder
+import com.example.ecotracker.presentation.ui.adapters.EditHabitsRecyclerViewAdapter.EditHabitsViewHolder
 
 
 

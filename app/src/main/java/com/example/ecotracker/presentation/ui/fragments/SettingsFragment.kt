@@ -1,4 +1,4 @@
-package com.example.ecotracker.fragments
+package com.example.ecotracker.presentation.ui.fragments
 
 import android.os.Bundle
 import androidx.preference.PreferenceFragmentCompat

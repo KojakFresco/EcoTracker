@@ -3,8 +3,6 @@ package com.example.ecotracker
 import android.content.Context
 import android.content.Context.MODE_PRIVATE
 import android.content.SharedPreferences
-import android.os.Handler
-import android.os.Looper
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -15,7 +13,6 @@ import androidx.cardview.widget.CardView
 import androidx.core.content.edit
 import androidx.recyclerview.widget.RecyclerView
 import com.example.ecotracker.MyHabitsRecyclerViewAdapter.MyViewHolder
-import com.example.ecotracker.fragments.MyHabitsFragment
 
 data class HabitItem(var id: String, var name: String, var description: String, var isCompleted: Boolean?)
 

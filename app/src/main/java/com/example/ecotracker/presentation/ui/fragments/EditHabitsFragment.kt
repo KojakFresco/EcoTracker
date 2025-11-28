@@ -1,4 +1,4 @@
-package com.example.ecotracker.fragments
+package com.example.ecotracker.presentation.ui.fragments
 
 import android.app.Dialog
 import android.content.Context.MODE_PRIVATE
@@ -10,15 +10,15 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.FrameLayout
 import androidx.core.content.edit
+import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.example.ecotracker.HabitItem
 import com.example.ecotracker.LOG_LABEL
-import com.example.ecotracker.adapters.EditHabitsRecyclerViewAdapter
-import com.example.ecotracker.adapters.NewHabitItem
+import com.example.ecotracker.presentation.ui.adapters.EditHabitsRecyclerViewAdapter
+import com.example.ecotracker.presentation.ui.adapters.NewHabitItem
 import com.example.ecotracker.databinding.FragmentEditHabitsBinding
-import com.example.ecotracker.habitsDescriptions
 import com.example.ecotracker.habitsIDs
 import com.example.ecotracker.habitsNames
+import com.google.android.material.R
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
@@ -47,8 +47,7 @@ class EditHabitsFragment : BottomSheetDialogFragment() {
 
         val adapter = EditHabitsRecyclerViewAdapter(activity, habitsList)
         recyclerView.adapter = adapter
-        recyclerView.layoutManager = androidx.recyclerview.widget
-            .LinearLayoutManager(activity)
+        recyclerView.layoutManager = LinearLayoutManager(activity)
 
         binding.closeButton.setOnClickListener {
             dismiss()
@@ -76,7 +75,7 @@ class EditHabitsFragment : BottomSheetDialogFragment() {
         dialog.setOnShowListener { dialogInterface ->
             val bottomSheetDialog = dialogInterface as BottomSheetDialog
             val bottomSheet = bottomSheetDialog.findViewById<View>(
-                com.google.android.material.R.id.design_bottom_sheet) as FrameLayout?
+                R.id.design_bottom_sheet) as FrameLayout?
 
             bottomSheet?.let {
                 val layoutParams = it.layoutParams
