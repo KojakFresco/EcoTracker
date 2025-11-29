@@ -7,27 +7,37 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.activity.result.launch
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.ecotracker.HabitItem
 import com.example.ecotracker.LOG_LABEL
 import com.example.ecotracker.MyHabitsRecyclerViewAdapter
+import com.example.ecotracker.data.model.Habit
 import com.example.ecotracker.databinding.FragmentMyHabitsBinding
 import com.example.ecotracker.habitsDescriptions
 import com.example.ecotracker.habitsIDs
 import com.example.ecotracker.habitsNames
+import com.example.ecotracker.presentation.viewmodels.HabitsViewModel
 import com.google.android.material.floatingactionbutton.FloatingActionButton
+import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.launch
 import kotlin.math.abs
 
 
+@AndroidEntryPoint
 class MyHabitsFragment : Fragment(), MyHabitsRecyclerViewAdapter.OnHabitStateChangedListener {
     private var _binding: FragmentMyHabitsBinding? = null
     private val binding get() = _binding!!
 
     private var doneHabits = 0
-    private var habitsList: ArrayList<HabitItem> = ArrayList()
+    private var habitsList: ArrayList<Habit> = ArrayList()
     private lateinit var myHabitsAdapter: MyHabitsRecyclerViewAdapter
+
+    private val viewModel: HabitsViewModel by viewModels()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -61,13 +71,20 @@ class MyHabitsFragment : Fragment(), MyHabitsRecyclerViewAdapter.OnHabitStateCha
             EditHabitsFragment.newInstance().show(childFragmentManager, EditHabitsFragment.TAG)
         }
 
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewModel.myHabits.collect { habitsToShow ->
+                myHabitsAdapter.updateHabits(habitsToShow)
+            }
+        }
+
+
         childFragmentManager.setFragmentResultListener("requestKey", this) { requestKey, bundle ->
 
             val result = bundle.getBoolean("habitsUpdated")
             if (result) {
                 Log.d(LOG_LABEL, "Получен сигнал от EditHabitsFragment. Обновляем список привычек...")
+                viewModel.loadMyHabits()
                 setUpHabits()
-                myHabitsAdapter.notifyDataSetChanged()
                 updateDoneHabitsCount()
             }
         }
@@ -120,30 +137,12 @@ class MyHabitsFragment : Fragment(), MyHabitsRecyclerViewAdapter.OnHabitStateCha
     }
 
     private fun setUpHabits() {
-        habitsList.clear()
         //TODO: add sort
-        for (id in habitsIDs) {
-            if (loadHabitById(id)!!) {
-                habitsList.add(
-                    HabitItem(
-                        id,
-                        habitsNames[id]!!,
-                        habitsDescriptions[id]!!,
-                        loadHabitStateById(id)
-                    )
-                )
+        for (item in viewModel.myHabits.value) {
+            if (!habitsList.contains(item) && viewModel.loadHabitState(item.id)!!) {
+                habitsList.add(item)
             }
         }
-    }
-
-    fun loadHabitById(id : String) : Boolean? {
-        try {
-            val sp: SharedPreferences? = activity?.getSharedPreferences("HABITS", MODE_PRIVATE)
-            return sp?.getBoolean(id, false)
-        } catch (e: Exception) {
-            Log.e(LOG_LABEL, "Load error " + e.message)
-        }
-        return false
     }
 
     fun loadHabitStateById(id : String) : Boolean? {

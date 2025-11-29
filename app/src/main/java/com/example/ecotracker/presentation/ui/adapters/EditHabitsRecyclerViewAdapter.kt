@@ -27,21 +27,21 @@ class EditHabitsRecyclerViewAdapter(var context: Context?, var habitItems: List<
         holder.name.text = habitItems[position].title
 
         // TODO: isAdded check
-//        if (habitItems[position].isAdded!!) {
-//            holder.addButton.setImageResource(R.drawable.icon_close)
-//        } else {
-//            holder.addButton.setImageResource(R.drawable.icon_plus)
-//        }
-//
-//        holder.addButton.setOnClickListener(View.OnClickListener {
-//            if (habitItems[position].isAdded!!) {
-//                habitItems[position].isAdded = false
-//                holder.addButton.setImageResource(R.drawable.icon_plus)
-//            } else {
-//                habitItems[position].isAdded = true
-//                holder.addButton.setImageResource(R.drawable.icon_close)
-//            }
-//        })
+        if (habitItems[position].isAdded) {
+            holder.addButton.setImageResource(R.drawable.icon_close)
+        } else {
+            holder.addButton.setImageResource(R.drawable.icon_plus)
+        }
+
+        holder.addButton.setOnClickListener(View.OnClickListener {
+            if (habitItems[position].isAdded) {
+                habitItems[position].isAdded = false
+                holder.addButton.setImageResource(R.drawable.icon_plus)
+            } else {
+                habitItems[position].isAdded = true
+                holder.addButton.setImageResource(R.drawable.icon_close)
+            }
+        })
     }
 
     override fun getItemCount(): Int {

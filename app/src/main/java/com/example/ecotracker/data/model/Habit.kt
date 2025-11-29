@@ -9,5 +9,6 @@ data class Habit(
     val co2Reduction: Float = 0.0f,
     val difficulty: String = "",
     val frequency: String = "",
-    val isCompleted: Boolean = false
+    var isCompleted: Boolean = false,
+    var isAdded: Boolean = false
 )

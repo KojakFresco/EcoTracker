@@ -10,15 +10,5 @@ class EditHabitsViewModel @Inject constructor(
     private val preferencesRepo: PreferencesRepository
 ) : ViewModel() {
 
-    private val HABIT_IN_USE_PREFIX = "is_habit_in_use_"
 
-    fun saveHabitState(id : String, isInUse : Boolean) {
-        val habitKey = HABIT_IN_USE_PREFIX + id
-        preferencesRepo.saveBoolean(habitKey, isInUse)
-    }
-
-    fun loadHabitState(id : String) : Boolean? {
-        val habitKey = HABIT_IN_USE_PREFIX + id
-        return preferencesRepo.loadBoolean(habitKey)
-    }
 }

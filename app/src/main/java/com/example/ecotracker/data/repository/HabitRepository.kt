@@ -11,7 +11,8 @@ import javax.inject.Inject
 
 @Singleton
 class HabitRepository @Inject constructor(
-    private val db: FirebaseFirestore
+    private val db: FirebaseFirestore,
+    private val preferencesRepo: PreferencesRepository
 ){
 
     suspend fun getHabits(): List<Habit> {
@@ -20,7 +21,11 @@ class HabitRepository @Inject constructor(
             val documents = db.collection("habitPatterns").get().await()
 
             val habits = documents.map { document ->
-                document.toObject<Habit>()
+                val habitFromDb = document.toObject<Habit>()
+
+                val isHabitAdded = preferencesRepo.loadBoolean("is_habit_in_use_${habitFromDb.id}")
+
+                habitFromDb.copy(id = document.id, isAdded = isHabitAdded)
             }
             Log.d(LOG_LABEL, "Успешно получено ${habits.size} привычек")
             return habits
@@ -29,7 +34,5 @@ class HabitRepository @Inject constructor(
             Log.w(LOG_LABEL, "Ошибка при получении привычек", e)
             return emptyList()
         }
-    }
-    suspend fun completeHabit(habitId: String) {
     }
 }

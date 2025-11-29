@@ -13,10 +13,12 @@ import androidx.cardview.widget.CardView
 import androidx.core.content.edit
 import androidx.recyclerview.widget.RecyclerView
 import com.example.ecotracker.MyHabitsRecyclerViewAdapter.MyViewHolder
+import com.example.ecotracker.data.model.Habit
+import com.example.ecotracker.presentation.viewmodels.HabitsViewModel
 
 data class HabitItem(var id: String, var name: String, var description: String, var isCompleted: Boolean?)
 
-class MyHabitsRecyclerViewAdapter(var context: Context?, var habitItems: ArrayList<HabitItem>) :
+class MyHabitsRecyclerViewAdapter(var context: Context?, var habitItems: ArrayList<Habit>) :
     RecyclerView.Adapter<MyViewHolder?>() {
     interface OnHabitStateChangedListener {
         fun onCardStateChanged(position: Int, isChecked: Boolean?)
@@ -38,11 +40,11 @@ class MyHabitsRecyclerViewAdapter(var context: Context?, var habitItems: ArrayLi
     override fun onBindViewHolder(holder: MyViewHolder, position: Int) {
         // Assigning values to the views we created in the recycler_view_row layout file
         // based on the position of the recycler view
-        val item: HabitItem = habitItems[position]
+        val item: Habit = habitItems[position]
 
-        holder.name.text = item.name
+        holder.name.text = item.title
         holder.description.text = item.description
-        holder.checkBox.isChecked = item.isCompleted!!
+        holder.checkBox.isChecked = item.isCompleted
 
         if (item.isCompleted!!){
             holder.setAlpha(0.5f)
@@ -52,9 +54,9 @@ class MyHabitsRecyclerViewAdapter(var context: Context?, var habitItems: ArrayLi
 
         holder.checkBox.setOnClickListener(View.OnClickListener {
             item.isCompleted = holder.checkBox.isChecked
-            saveHabitById(item.id, item.isCompleted!!)
+            saveHabitById(item.id, item.isCompleted)
 
-            if (item.isCompleted!!){
+            if (item.isCompleted){
                 holder.setAlpha(0.5f)
             } else {
                 holder.setAlpha(1f)
@@ -68,6 +70,14 @@ class MyHabitsRecyclerViewAdapter(var context: Context?, var habitItems: ArrayLi
         return habitItems.size
     }
 
+    fun updateHabits(newHabitList: List<Habit>) {
+        this.habitItems.clear()
+        this.habitItems.addAll(newHabitList)
+        notifyDataSetChanged()
+    }
+
+
+// TODO: change
     fun saveHabitById(id : String, isDone : Boolean) {
         try {
             val sp: SharedPreferences? = context?.getSharedPreferences("HABITS_IN_USE", MODE_PRIVATE)
