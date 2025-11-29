@@ -75,6 +75,8 @@ dependencies {
     // Coroutines
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.10.2")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.10.2")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-play-services:1.7.3") // Версию можно сверить с вашей версией корутин
+
 
     // Lifecycle-aware coroutine scopes
     implementation("androidx.navigation:navigation-fragment-ktx:2.9.6")

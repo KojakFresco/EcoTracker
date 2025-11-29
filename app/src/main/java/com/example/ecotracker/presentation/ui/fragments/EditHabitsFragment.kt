@@ -1,30 +1,26 @@
 package com.example.ecotracker.presentation.ui.fragments
 
 import android.app.Dialog
-import android.content.Context.MODE_PRIVATE
-import android.content.SharedPreferences
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.FrameLayout
-import androidx.core.content.edit
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.ecotracker.LOG_LABEL
 import com.example.ecotracker.presentation.ui.adapters.EditHabitsRecyclerViewAdapter
-import com.example.ecotracker.presentation.ui.adapters.NewHabitItem
 import com.example.ecotracker.databinding.FragmentEditHabitsBinding
-import com.example.ecotracker.habitsIDs
-import com.example.ecotracker.habitsNames
-import com.example.ecotracker.presentation.viewmodels.EditHabitsViewModel
+import com.example.ecotracker.presentation.viewmodels.HabitsViewModel
 import com.google.android.material.R
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
 class EditHabitsFragment : BottomSheetDialogFragment() {
@@ -32,10 +28,7 @@ class EditHabitsFragment : BottomSheetDialogFragment() {
     private var _binding: FragmentEditHabitsBinding? = null
     private val binding get() = _binding!!
 
-    private val viewModel: EditHabitsViewModel by viewModels()
-
-
-    private var habitsList: ArrayList<NewHabitItem> = ArrayList()
+    private val viewModel: HabitsViewModel by viewModels()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -50,20 +43,29 @@ class EditHabitsFragment : BottomSheetDialogFragment() {
         super.onViewCreated(view, savedInstanceState)
 
         val recyclerView: RecyclerView = binding.habitsRecycler
-        setUpHabitsList()
 
-        val adapter = EditHabitsRecyclerViewAdapter(activity, habitsList)
+        val adapter = EditHabitsRecyclerViewAdapter(requireActivity(), ArrayList())
         recyclerView.adapter = adapter
         recyclerView.layoutManager = LinearLayoutManager(activity)
+
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewModel.habits.collect { newHabitsList ->
+                // Этот код будет выполняться каждый раз, когда данные в viewModel.habits обновляются
+                Log.d(LOG_LABEL, "Habits updated. New list size: ${newHabitsList.size}")
+                adapter.updateHabits(newHabitsList)
+            }
+        }
+        viewModel.loadHabits()
 
         binding.closeButton.setOnClickListener {
             dismiss()
         }
 
         binding.btnSave.setOnClickListener {
-            for (item in habitsList) {
-                viewModel.saveHabitState(item.id, item.isAdded!!)
-            }
+            // TODO: check is added
+//            for (item in habitsList) {
+//                viewModel.saveHabitState(item.id, item.isAdded!!)
+//            }
             val result = Bundle().apply {
                 putBoolean("habitsUpdated", true) // Передаем флаг, что данные обновлены
             }
@@ -93,18 +95,6 @@ class EditHabitsFragment : BottomSheetDialogFragment() {
             }
         }
         return dialog
-    }
-
-    // TODO: remake this fun
-    fun setUpHabitsList() {
-        for (id in habitsIDs) {
-            if (!habitsList.contains(NewHabitItem(id, habitsNames[id]!!, viewModel.loadHabitState(id))))
-                habitsList.add(
-                    NewHabitItem(
-                        id,
-                        habitsNames[id]!!,
-                        viewModel.loadHabitState(id)))
-        }
     }
 
     override fun onDestroyView() {

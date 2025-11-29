@@ -2,6 +2,7 @@ package com.example.ecotracker.di
 
 import android.content.Context
 import android.content.SharedPreferences
+import com.example.ecotracker.data.repository.HabitRepository
 import com.example.ecotracker.domain.managers.PermissionManager
 import com.example.ecotracker.domain.managers.NavigationManager
 import com.google.firebase.firestore.FirebaseFirestore
@@ -17,7 +18,7 @@ import javax.inject.Singleton
 object AppModule {
 
     @Provides
-    @Singleton
+    @Singleton // Use this if you want a single instance throughout the app
     fun provideSharedPreferences(@ApplicationContext context: Context): SharedPreferences {
         return context.getSharedPreferences("TABLE", Context.MODE_PRIVATE)
     }

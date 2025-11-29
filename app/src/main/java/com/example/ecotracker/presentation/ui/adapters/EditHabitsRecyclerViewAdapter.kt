@@ -8,13 +8,14 @@ import android.widget.ImageButton
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.example.ecotracker.R
+import com.example.ecotracker.data.model.Habit
 import com.example.ecotracker.presentation.ui.adapters.EditHabitsRecyclerViewAdapter.EditHabitsViewHolder
 
 
 
 data class NewHabitItem(var id : String, var name : String, var isAdded : Boolean?)
 
-class EditHabitsRecyclerViewAdapter(var context: Context?, var habitItems: ArrayList<NewHabitItem>) :
+class EditHabitsRecyclerViewAdapter(var context: Context?, var habitItems: List<Habit>) :
     RecyclerView.Adapter<EditHabitsViewHolder?>() {
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): EditHabitsViewHolder {
         val inflater = LayoutInflater.from(context)
@@ -23,27 +24,33 @@ class EditHabitsRecyclerViewAdapter(var context: Context?, var habitItems: Array
     }
 
     override fun onBindViewHolder(holder: EditHabitsViewHolder, position: Int) {
-        holder.name.text = habitItems[position].name
+        holder.name.text = habitItems[position].title
 
-        if (habitItems[position].isAdded!!) {
-            holder.addButton.setImageResource(R.drawable.icon_close)
-        } else {
-            holder.addButton.setImageResource(R.drawable.icon_plus)
-        }
-
-        holder.addButton.setOnClickListener(View.OnClickListener {
-            if (habitItems[position].isAdded!!) {
-                habitItems[position].isAdded = false
-                holder.addButton.setImageResource(R.drawable.icon_plus)
-            } else {
-                habitItems[position].isAdded = true
-                holder.addButton.setImageResource(R.drawable.icon_close)
-            }
-        })
+        // TODO: isAdded check
+//        if (habitItems[position].isAdded!!) {
+//            holder.addButton.setImageResource(R.drawable.icon_close)
+//        } else {
+//            holder.addButton.setImageResource(R.drawable.icon_plus)
+//        }
+//
+//        holder.addButton.setOnClickListener(View.OnClickListener {
+//            if (habitItems[position].isAdded!!) {
+//                habitItems[position].isAdded = false
+//                holder.addButton.setImageResource(R.drawable.icon_plus)
+//            } else {
+//                habitItems[position].isAdded = true
+//                holder.addButton.setImageResource(R.drawable.icon_close)
+//            }
+//        })
     }
 
     override fun getItemCount(): Int {
         return habitItems.size
+    }
+
+    fun updateHabits(newHabits: List<Habit>) {
+        this.habitItems = newHabits
+        notifyDataSetChanged() // Уведомляем адаптер, что данные изменились
     }
 
     class EditHabitsViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
