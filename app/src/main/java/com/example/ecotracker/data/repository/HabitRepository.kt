@@ -25,8 +25,8 @@ class HabitRepository @Inject constructor(
             val habits = documents.map { document ->
                 val habitFromDb = document.toObject<Habit>()
 
-                val isHabitAdded = preferencesRepo.loadBoolean(HABIT_IN_USE_PREFIX + document.id)
-                val isHabitDone = preferencesRepo.loadBoolean(HABIT_DONE_PREFIX + document.id)
+                val isHabitAdded = preferencesRepo.loadBoolean(HABIT_IN_USE_PREFIX + document.id, false)
+                val isHabitDone = preferencesRepo.loadBoolean(HABIT_DONE_PREFIX + document.id, false)
 
                 habitFromDb.copy(id = document.id, isAdded = isHabitAdded, isCompleted = isHabitDone)
             }

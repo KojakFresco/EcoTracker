@@ -11,6 +11,7 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.work.ExistingWorkPolicy
 import androidx.work.OneTimeWorkRequestBuilder
+import androidx.work.WorkInfo
 import androidx.work.WorkManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.ecotracker.LOG_LABEL
@@ -20,9 +21,9 @@ import com.example.ecotracker.presentation.ui.adapters.MyHabitsRecyclerViewAdapt
 import com.example.ecotracker.presentation.viewmodels.HabitsViewModel
 import com.example.ecotracker.workers.ResetHabitsWorker
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
-import com.google.android.material.floatingactionbutton.FloatingActionButton
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
@@ -45,17 +46,48 @@ class MyHabitsFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        setupRecyclerView()
+        setupClickListeners()
+        observeViewModel()
+    }
+
+    private fun setupRecyclerView() {
         myHabitsAdapter = MyHabitsRecyclerViewAdapter { habit ->
             showConfirmationDialog(habit)
         }
         binding.recycler.adapter = myHabitsAdapter
         binding.recycler.layoutManager = LinearLayoutManager(requireActivity())
+    }
 
-        val addButton: FloatingActionButton = binding.fabAddHabit
-        addButton.setOnClickListener {
+    private fun setupClickListeners() {
+        binding.fabAddHabit.setOnClickListener {
             EditHabitsFragment.newInstance().show(childFragmentManager, EditHabitsFragment.TAG)
         }
 
+        // --- ВРЕМЕННЫЙ КОД ДЛЯ ТЕСТИРОВАНИЯ --- //
+        // TODO: Удалите этот блок после проверки
+        binding.infoLabel.setOnClickListener {
+            Toast.makeText(requireContext(), "Принудительный сброс привычек...", Toast.LENGTH_SHORT).show()
+            val workManager = WorkManager.getInstance(requireContext())
+            val oneTimeResetRequest = OneTimeWorkRequestBuilder<ResetHabitsWorker>().build()
+
+            workManager.enqueueUniqueWork("oneTimeReset", ExistingWorkPolicy.REPLACE, oneTimeResetRequest)
+
+            viewLifecycleOwner.lifecycleScope.launch {
+                val workInfo = workManager.getWorkInfoByIdFlow(oneTimeResetRequest.id).first { it.state.isFinished }
+                if (workInfo.state == WorkInfo.State.SUCCEEDED) {
+                    Log.d(LOG_LABEL, "Воркер успешно завершил работу. Обновляем UI.")
+                    viewModel.loadMyHabits()
+                } else {
+                    Log.d(LOG_LABEL, "Воркер завершился с ошибкой или был отменен.")
+                    Toast.makeText(requireContext(), "Не удалось сбросить привычки", Toast.LENGTH_SHORT).show()
+                }
+            }
+        }
+        // --- КОНЕЦ ВРЕМЕННОГО КОДА --- //
+    }
+
+    private fun observeViewModel() {
         viewLifecycleOwner.lifecycleScope.launch {
             viewModel.myHabits.collect { newHabitsList ->
                 Log.d(LOG_LABEL, "Получено обновление. Новый список: ${newHabitsList.size} элементов.")
@@ -65,30 +97,17 @@ class MyHabitsFragment : Fragment() {
             }
         }
 
-        childFragmentManager.setFragmentResultListener("requestKey", this) { requestKey, bundle ->
-            val result = bundle.getBoolean("habitsUpdated")
-            if (result) {
-                viewModel.loadMyHabits()
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewModel.showStreakToast.collectLatest {
+                Toast.makeText(requireContext(), "Вы молодец!", Toast.LENGTH_SHORT).show()
             }
         }
 
-        // --- ВРЕМЕННЫЙ КОД ДЛЯ ТЕСТИРОВАНИЯ --- //
-        // TODO: Удалите этот блок после проверки
-        binding.infoLabel.setOnClickListener {
-            Toast.makeText(requireContext(), "Принудительный сброс привычек...", Toast.LENGTH_SHORT).show()
-            val workManager = WorkManager.getInstance(requireContext())
-            val oneTimeResetRequest = OneTimeWorkRequestBuilder<ResetHabitsWorker>().build()
-            workManager.enqueueUniqueWork("oneTimeReset", ExistingWorkPolicy.REPLACE, oneTimeResetRequest)
-
-            // Обновляем UI с небольшой задержкой, чтобы воркер успел отработать
-            viewLifecycleOwner.lifecycleScope.launch {
-                delay(1000)
+        childFragmentManager.setFragmentResultListener("requestKey", this) { _, bundle ->
+            if (bundle.getBoolean("habitsUpdated")) {
                 viewModel.loadMyHabits()
             }
         }
-        // --- КОНЕЦ ВРЕМЕННОГО КОДА --- //
-
-        viewModel.loadMyHabits()
     }
 
     private fun showConfirmationDialog(habit: Habit) {
@@ -98,15 +117,20 @@ class MyHabitsFragment : Fragment() {
                 .setTitle("Подтверждение")
                 .setMessage(dialogMessage)
                 .setNegativeButton("Отмена", null)
-                .setPositiveButton("Да") { dialog, which ->
+                .setPositiveButton("Да") { _, _ ->
                     viewModel.updateHabitState(habit.id, true)
                 }
                 .show()
         }
     }
 
-    override fun onDestroy() {
-        super.onDestroy()
+    override fun onResume() {
+        super.onResume()
+        viewModel.loadMyHabits()
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
         _binding = null
     }
 }

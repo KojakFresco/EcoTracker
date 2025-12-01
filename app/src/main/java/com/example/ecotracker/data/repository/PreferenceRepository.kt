@@ -20,7 +20,13 @@ class PreferencesRepository @Inject constructor(
         sharedPreferences.edit().putInt(name, value).apply()
     }
 
-    fun loadInt(name: String): Int = sharedPreferences.getInt(name, 0)
+    fun loadInt(name: String, defaultValue: Int): Int = sharedPreferences.getInt(name, defaultValue)
+
+    fun saveLong(name: String, value: Long) {
+        sharedPreferences.edit().putLong(name, value).apply()
+    }
+
+    fun loadLong(name: String, defaultValue: Long): Long = sharedPreferences.getLong(name, defaultValue)
 
     fun saveString(name: String, value: String) {
         sharedPreferences.edit().putString(name, value).apply()
@@ -30,7 +36,7 @@ class PreferencesRepository @Inject constructor(
         sharedPreferences.edit().putBoolean(name, value).apply()
     }
 
-    fun loadBoolean(name: String): Boolean = sharedPreferences.getBoolean(name, false)
+    fun loadBoolean(name: String, defaultValue: Boolean): Boolean = sharedPreferences.getBoolean(name, defaultValue)
 
 
 
