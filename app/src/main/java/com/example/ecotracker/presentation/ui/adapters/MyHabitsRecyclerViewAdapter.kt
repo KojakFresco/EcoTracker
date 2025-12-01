@@ -22,10 +22,8 @@ class MyHabitsRecyclerViewAdapter(
         fun bind(habit: Habit) {
             binding.name.text = habit.title
             binding.description.text = habit.description
-            binding.checkBox.isChecked = habit.isCompleted
 
-            val alphaValue = if (habit.isCompleted) 0.5f else 1.0f
-            binding.root.alpha = alphaValue
+            updateCompletedState(habit.isCompleted)
 
             binding.checkBox.setOnClickListener {
                 if (bindingAdapterPosition != RecyclerView.NO_POSITION) {
@@ -38,8 +36,8 @@ class MyHabitsRecyclerViewAdapter(
         }
 
         fun updateCompletedState(isCompleted: Boolean) {
-            binding.root.alpha = if (isCompleted) 0.5f else 1.0f
             binding.checkBox.isChecked = isCompleted
+            binding.cardView.alpha = if (isCompleted) 0.5f else 1.0f
         }
     }
 

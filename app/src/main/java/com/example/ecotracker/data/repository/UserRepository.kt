@@ -5,6 +5,7 @@ import com.example.ecotracker.HABIT_DONE_PREFIX
 import com.example.ecotracker.HABIT_IN_USE_PREFIX
 import com.example.ecotracker.LOG_LABEL
 import com.example.ecotracker.data.model.Habit
+import com.example.ecotracker.data.model.User
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.toObject
 import jakarta.inject.Singleton
@@ -12,30 +13,23 @@ import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
 
 @Singleton
-class HabitRepository @Inject constructor(
+class UserRepository @Inject constructor(
     private val db: FirebaseFirestore,
     private val preferencesRepo: PreferencesRepository
-){
-
-    suspend fun getHabits(): List<Habit> {
+) {
+    suspend fun getUser(): User? {
         try {
             // Отправляем запрос и ПРИОСТАНАВЛИВАЕМ функцию до получения результата
-            val documents = db.collection("habitPatterns").get().await()
+            val document = db.collection("users").document("user_test_1").get().await()
+            val user = document.toObject<User>()!!.copy(id = document.id)
 
-            val habits = documents.map { document ->
-                val habitFromDb = document.toObject<Habit>()
-
-                val isHabitAdded = preferencesRepo.loadBoolean(HABIT_IN_USE_PREFIX + document.id)
-                val isHabitDone = preferencesRepo.loadBoolean(HABIT_DONE_PREFIX + document.id)
-
-                habitFromDb.copy(id = document.id, isAdded = isHabitAdded, isCompleted = isHabitDone)
-            }
-            Log.d(LOG_LABEL, "Успешно получено ${habits.size} привычек")
-            return habits
+            Log.d(LOG_LABEL, "Успешно получен пользователь: $user")
+            return user
 
         } catch (e: Exception) {
             Log.w(LOG_LABEL, "Ошибка при получении привычек", e)
-            return emptyList()
+            return null
         }
+
     }
 }
