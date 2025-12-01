@@ -31,7 +31,6 @@ class ExFragment : Fragment() {
         val label: TextView = binding.label
         val updateButton: Button = binding.updateButton
         val saveButton: Button = binding.saveButton
-        var lastTime: ZonedDateTime
 //
 //        counter = PreferencesRepository.getInt("counter", 0)!!
 //        Log.d(LOG_LABEL, counter.toString())

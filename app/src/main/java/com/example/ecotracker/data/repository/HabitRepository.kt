@@ -38,4 +38,16 @@ class HabitRepository @Inject constructor(
             return emptyList()
         }
     }
+
+    suspend fun resetAllHabits() {
+        try {
+            val documents = db.collection("habitPatterns").get().await()
+            for (document in documents) {
+                preferencesRepo.saveBoolean(HABIT_DONE_PREFIX + document.id, false)
+            }
+            Log.d(LOG_LABEL, "Все привычки были сброшены")
+        } catch (e: Exception) {
+            Log.w(LOG_LABEL, "Ошибка при сбросе привычек", e)
+        }
+    }
 }
