@@ -9,10 +9,10 @@ import com.example.ecotracker.presentation.ui.adapters.MyHabitsRecyclerViewAdapt
 import com.example.ecotracker.data.model.Habit
 import com.example.ecotracker.databinding.ListItemBinding
 
-typealias OnHabitCheckedChange = (habitId: String, isChecked: Boolean) -> Unit
+typealias OnHabitClicked = (habit: Habit) -> Unit
 
 class MyHabitsRecyclerViewAdapter(
-    private val onHabitCheckedChange: OnHabitCheckedChange
+    private val onHabitClicked: OnHabitClicked
 ) : ListAdapter<Habit, MyViewHolder>(HabitDiffCallback()) {
 
     inner class MyViewHolder(private val binding: ListItemBinding) : RecyclerView.ViewHolder(binding.root) {
@@ -27,10 +27,10 @@ class MyHabitsRecyclerViewAdapter(
 
             binding.checkBox.setOnClickListener {
                 if (bindingAdapterPosition != RecyclerView.NO_POSITION) {
-                    updateCompletedState(binding.checkBox.isChecked)
-
-                    val currentHabitId = getItem(bindingAdapterPosition).id
-                    onHabitCheckedChange(currentHabitId, binding.checkBox.isChecked)
+                    // updateCompletedState(binding.checkBox.isChecked)
+                    val currentHabit = getItem(bindingAdapterPosition)
+                    binding.checkBox.isChecked = currentHabit.isCompleted
+                    onHabitClicked(currentHabit)
                 }
             }
         }
