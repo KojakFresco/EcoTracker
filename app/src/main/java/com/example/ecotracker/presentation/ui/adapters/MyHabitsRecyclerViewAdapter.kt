@@ -1,117 +1,94 @@
-package com.example.ecotracker
+package com.example.ecotracker.presentation.ui.adapters
 
-import android.content.Context
-import android.content.Context.MODE_PRIVATE
-import android.content.SharedPreferences
-import android.util.Log
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
-import android.widget.CheckBox
-import android.widget.TextView
-import androidx.cardview.widget.CardView
-import androidx.core.content.edit
+import androidx.recyclerview.widget.DiffUtil
+import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
-import com.example.ecotracker.MyHabitsRecyclerViewAdapter.MyViewHolder
+import com.example.ecotracker.presentation.ui.adapters.MyHabitsRecyclerViewAdapter.MyViewHolder
 import com.example.ecotracker.data.model.Habit
-import com.example.ecotracker.presentation.viewmodels.HabitsViewModel
+import com.example.ecotracker.databinding.ListItemBinding
 
-data class HabitItem(var id: String, var name: String, var description: String, var isCompleted: Boolean?)
+typealias OnHabitCheckedChange = (habitId: String, isChecked: Boolean) -> Unit
 
-class MyHabitsRecyclerViewAdapter(var context: Context?, var habitItems: ArrayList<Habit>) :
-    RecyclerView.Adapter<MyViewHolder?>() {
-    interface OnHabitStateChangedListener {
-        fun onCardStateChanged(position: Int, isChecked: Boolean?)
-    }
+class MyHabitsRecyclerViewAdapter(
+    private val onHabitCheckedChange: OnHabitCheckedChange
+) : ListAdapter<Habit, MyViewHolder>(HabitDiffCallback()) {
 
-    private var listener: OnHabitStateChangedListener? = null
+    inner class MyViewHolder(private val binding: ListItemBinding) : RecyclerView.ViewHolder(binding.root) {
+        // Grabbing the views from our recycler_view_row layout file
+        // Kinda like in the onCreate method
 
-    fun setOnHabitStateChangedListener(listener: OnHabitStateChangedListener) {
-        this.listener = listener
+        fun bind(habit: Habit) {
+            binding.name.text = habit.title
+            binding.description.text = habit.description
+            binding.checkBox.isChecked = habit.isCompleted
+
+            val alphaValue = if (habit.isCompleted) 0.5f else 1.0f
+            binding.root.alpha = alphaValue
+
+            binding.checkBox.setOnClickListener {
+                if (bindingAdapterPosition != RecyclerView.NO_POSITION) {
+                    updateCompletedState(binding.checkBox.isChecked)
+
+                    val currentHabitId = getItem(bindingAdapterPosition).id
+                    onHabitCheckedChange(currentHabitId, binding.checkBox.isChecked)
+                }
+            }
+        }
+
+        fun updateCompletedState(isCompleted: Boolean) {
+            binding.root.alpha = if (isCompleted) 0.5f else 1.0f
+            binding.checkBox.isChecked = isCompleted
+        }
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MyViewHolder {
         // This is where you inflate the layout (giving a look to our rows)
-        val inflater = LayoutInflater.from(context)
-        val view = inflater.inflate(R.layout.list_item, parent, false)
-        return MyViewHolder(view)
+        val binding = ListItemBinding.inflate(LayoutInflater.from(parent.context), parent, false)
+        return MyViewHolder(binding)
     }
 
+    // Этот метод onBindViewHolder будет вызываться для ПОЛНОЙ перерисовки
     override fun onBindViewHolder(holder: MyViewHolder, position: Int) {
-        // Assigning values to the views we created in the recycler_view_row layout file
-        // based on the position of the recycler view
-        val item: Habit = habitItems[position]
+        holder.bind(getItem(position))
+    }
 
-        holder.name.text = item.title
-        holder.description.text = item.description
-        holder.checkBox.isChecked = item.isCompleted
-
-        if (item.isCompleted!!){
-            holder.setAlpha(0.5f)
+    // А ЭТОТ МЕТОД будет вызываться, когда DiffUtil найдет ИЗМЕНЕНИЯ с PAYLOAD
+    override fun onBindViewHolder(holder: MyViewHolder, position: Int, payloads: MutableList<Any>) {
+        if (payloads.isEmpty()) {
+            super.onBindViewHolder(holder, position, payloads)
         } else {
-            holder.setAlpha(1f)
-        }
-
-        holder.checkBox.setOnClickListener(View.OnClickListener {
-            item.isCompleted = holder.checkBox.isChecked
-            saveHabitById(item.id, item.isCompleted)
-
-            if (item.isCompleted){
-                holder.setAlpha(0.5f)
-            } else {
-                holder.setAlpha(1f)
+            if (payloads.contains(HabitDiffCallback.HabitPayload.COMPLETED_STATE_CHANGED)) {
+                val item = getItem(position)
+                holder.updateCompletedState(item.isCompleted)
             }
-            listener?.onCardStateChanged(position, item.isCompleted)
-        })
-    }
-
-    override fun getItemCount(): Int {
-        // The recycler view just wants to know the number of items you want displayed
-        return habitItems.size
-    }
-
-    fun updateHabits(newHabitList: List<Habit>) {
-        this.habitItems.clear()
-        this.habitItems.addAll(newHabitList)
-        notifyDataSetChanged()
-    }
-
-
-// TODO: change
-    fun saveHabitById(id : String, isDone : Boolean) {
-        try {
-            val sp: SharedPreferences? = context?.getSharedPreferences("HABITS_IN_USE", MODE_PRIVATE)
-            sp?.edit {
-                this.putBoolean(id, isDone)
-            }
-            Log.d(LOG_LABEL, "Save success, id: $id")
-        } catch (e: Exception) {
-            Log.e(LOG_LABEL, "Save Error " + e.message)
         }
     }
-
-    class MyViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        // Grabbing the views from our recycler_view_row layout file
-        // Kinda like in the onCreate method
-
-        var name: TextView
-        var description: TextView
-        var checkBox: CheckBox
-        var cardView: CardView
+}
 
 
-        init {
-            name = itemView.findViewById<TextView>(R.id.name)
-            description = itemView.findViewById<TextView>(R.id.description)
-            checkBox = itemView.findViewById<CheckBox>(R.id.checkBox)
-            cardView = itemView.findViewById<CardView>(R.id.cardView)
+// DiffUtil — это мозг ListAdapter. Он вычисляет разницу между старым и новым списком
+// и анимирует только те элементы, которые изменились.
+class HabitDiffCallback : DiffUtil.ItemCallback<Habit>() {
+    override fun areItemsTheSame(oldItem: Habit, newItem: Habit): Boolean {
+        // Элементы — это один и тот же объект, если у них одинаковый ID
+        return oldItem.id == newItem.id
+    }
+
+    override fun areContentsTheSame(oldItem: Habit, newItem: Habit): Boolean {
+        // Содержимое одинаковое, если все поля равны. Data class делает это за нас.
+        return oldItem == newItem
+    }
+
+    override fun getChangePayload(oldItem: Habit, newItem: Habit): Any? {
+        if (oldItem.isCompleted != newItem.isCompleted) {
+            return HabitPayload.COMPLETED_STATE_CHANGED
         }
+        return null
+    }
 
-        fun setAlpha(a: Float) {
-            name.alpha = a
-            description.alpha = a
-            cardView.alpha = a
-            checkBox.alpha = a
-        }
+    object HabitPayload {
+        const val COMPLETED_STATE_CHANGED = "COMPLETED_STATE_CHANGED"
     }
 }

@@ -1,6 +1,8 @@
 package com.example.ecotracker.data.repository
 
 import android.util.Log
+import com.example.ecotracker.HABIT_DONE_PREFIX
+import com.example.ecotracker.HABIT_IN_USE_PREFIX
 import com.example.ecotracker.LOG_LABEL
 import com.example.ecotracker.data.model.Habit
 import com.google.firebase.firestore.FirebaseFirestore
@@ -23,7 +25,8 @@ class HabitRepository @Inject constructor(
             val habits = documents.map { document ->
                 val habitFromDb = document.toObject<Habit>()
 
-                val isHabitAdded = preferencesRepo.loadBoolean("is_habit_in_use_${habitFromDb.id}")
+                val isHabitAdded = preferencesRepo.loadBoolean(HABIT_IN_USE_PREFIX + document.id)
+                val isHabitDone = preferencesRepo.loadBoolean(HABIT_DONE_PREFIX + document.id)
 
                 habitFromDb.copy(id = document.id, isAdded = isHabitAdded)
             }

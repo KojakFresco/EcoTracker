@@ -62,9 +62,8 @@ class EditHabitsFragment : BottomSheetDialogFragment() {
         }
 
         binding.btnSave.setOnClickListener {
-            // TODO: check is added
             for (item in viewModel.habits.value) {
-                viewModel.saveHabitState(item.id, item.isAdded)
+                viewModel.saveIsHabitInUse(item.id, item.isAdded)
             }
             val result = Bundle().apply {
                 putBoolean("habitsUpdated", true) // Передаем флаг, что данные обновлены
