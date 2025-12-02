@@ -10,68 +10,71 @@ import com.example.ecotracker.R
 
 class MainFragment : Fragment() {
 
-    var myHabitsFragment: MyHabitsFragment = MyHabitsFragment()
-    var statisticsFragment: StatisticsFragment = StatisticsFragment()
-    var ratingFragment: RatingFragment = RatingFragment()
-    var profileFragment: UserProfileFragment = UserProfileFragment()
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-
-        getChildFragmentManager().beginTransaction()
-            .replace(R.id.inner_fragment, myHabitsFragment).commit()
-    }
+    private var _binding: FragmentMainBinding? = null
+    private val binding get() = _binding!!
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?): View? {
-        val binding = FragmentMainBinding.inflate(inflater, container, false)
+        savedInstanceState: Bundle?
+    ): View {
+        _binding = FragmentMainBinding.inflate(inflater, container, false)
 
-        binding.bottomNavView.setOnItemSelectedListener{
-
-            when (it.itemId) {
-
-                R.id.home_page -> {
-                    getChildFragmentManager().beginTransaction()
-                        .replace(R.id.inner_fragment, myHabitsFragment).commit()
-                }
-                R.id.stats_page -> {
-                    getChildFragmentManager().beginTransaction()
-                        .replace(R.id.inner_fragment, statisticsFragment).commit()
-                }
-                R.id.rating_page -> {
-                    getChildFragmentManager().beginTransaction()
-                        .replace(R.id.inner_fragment, ratingFragment).commit()
-                }
-                R.id.profile_page -> {
-                    getChildFragmentManager().beginTransaction()
-                        .replace(R.id.inner_fragment, profileFragment).commit()
-                }
-
-            }
-            true
+        if (savedInstanceState == null) {
+            childFragmentManager.beginTransaction()
+                .replace(R.id.inner_fragment, MyHabitsFragment(), TAG_MY_HABITS)
+                .commit()
         }
 
+        binding.bottomNavView.setOnItemSelectedListener { menuItem ->
+            val fragment = when (menuItem.itemId) {
+                R.id.home_page -> {
+                    childFragmentManager.findFragmentByTag(TAG_MY_HABITS)
+                        ?: MyHabitsFragment()
+                }
+                R.id.stats_page -> {
+                    childFragmentManager.findFragmentByTag(TAG_STATISTICS)
+                        ?: StatisticsFragment()
+                }
+                R.id.rating_page -> {
+                    childFragmentManager.findFragmentByTag(TAG_RATING)
+                        ?: RatingFragment()
+                }
+                R.id.profile_page -> {
+                    childFragmentManager.findFragmentByTag(TAG_PROFILE)
+                        ?: UserProfileFragment()
+                }
+                else -> return@setOnItemSelectedListener false
+            }
+
+            childFragmentManager.beginTransaction()
+                .replace(R.id.inner_fragment, fragment, getTagForMenuItem(menuItem.itemId))
+                .commit()
+
+            true
+        }
 
         return binding.root
     }
 
-//    companion object {
-//        /**
-//         * Use this factory method to create a new instance of
-//         * this fragment using the provided parameters.
-//         *
-//         * @param param1 Parameter 1.
-//         * @param param2 Parameter 2.
-//         * @return A new instance of fragment MainFragment.
-//         */
-//        @JvmStatic
-//        fun newInstance(param1: String, param2: String) =
-//            MainFragment().apply {
-//                arguments = Bundle().apply {
-//                    putString(ARG_PARAM1, param1)
-//                    putString(ARG_PARAM2, param2)
-//                }
-//            }
-//    }
+    private fun getTagForMenuItem(itemId: Int): String {
+        return when (itemId) {
+            R.id.home_page -> TAG_MY_HABITS
+            R.id.stats_page -> TAG_STATISTICS
+            R.id.rating_page -> TAG_RATING
+            R.id.profile_page -> TAG_PROFILE
+            else -> ""
+        }
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
+    }
+
+    companion object {
+        private const val TAG_MY_HABITS = "my_habits"
+        private const val TAG_STATISTICS = "statistics"
+        private const val TAG_RATING = "rating"
+        private const val TAG_PROFILE = "profile"
+    }
 }

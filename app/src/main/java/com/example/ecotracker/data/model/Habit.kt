@@ -5,6 +5,7 @@ data class Habit(
     val title: String = "",
     val description: String = "",
     val category: String = "",
+    val icon: String = "",
     val baseExp: Int = 0,
     val co2Reduction: Float = 0.0f,
     val difficulty: String = "",
