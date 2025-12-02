@@ -11,9 +11,9 @@ import com.example.ecotracker.R
 class MainFragment : Fragment() {
 
     var myHabitsFragment: MyHabitsFragment = MyHabitsFragment()
-    var exFragment2: StatisticsFragment = StatisticsFragment()
+    var statisticsFragment: StatisticsFragment = StatisticsFragment()
     var ratingFragment: RatingFragment = RatingFragment()
-    var settingsFragment: ExFragment = ExFragment()
+    var profileFragment: UserProfileFragment = UserProfileFragment()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -37,7 +37,7 @@ class MainFragment : Fragment() {
                 }
                 R.id.stats_page -> {
                     getChildFragmentManager().beginTransaction()
-                        .replace(R.id.inner_fragment, exFragment2).commit()
+                        .replace(R.id.inner_fragment, statisticsFragment).commit()
                 }
                 R.id.rating_page -> {
                     getChildFragmentManager().beginTransaction()
@@ -45,7 +45,7 @@ class MainFragment : Fragment() {
                 }
                 R.id.profile_page -> {
                     getChildFragmentManager().beginTransaction()
-                        .replace(R.id.inner_fragment, settingsFragment).commit()
+                        .replace(R.id.inner_fragment, profileFragment).commit()
                 }
 
             }
