@@ -5,6 +5,7 @@ import android.content.SharedPreferences
 import com.example.ecotracker.data.repository.HabitRepository
 import com.example.ecotracker.domain.managers.PermissionManager
 import com.example.ecotracker.domain.managers.NavigationManager
+import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import dagger.Module
 import dagger.Provides
@@ -35,10 +36,16 @@ object AppModule {
         return NavigationManager()
     }
 
-    // Добавьте позже для Firebase
+    // Firebase Providers
     @Provides
     @Singleton
     fun provideFirebaseFirestore(): FirebaseFirestore {
         return FirebaseFirestore.getInstance()
+    }
+
+    @Provides
+    @Singleton
+    fun provideFirebaseAuth(): FirebaseAuth {
+        return FirebaseAuth.getInstance()
     }
 }

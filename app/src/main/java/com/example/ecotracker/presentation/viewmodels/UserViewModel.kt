@@ -1,3 +1,4 @@
+package com.example.ecotracker.presentation.viewmodels
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -13,7 +14,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 import android.util.Log
-
+import java.util.ArrayList
 
 @HiltViewModel
 class UserViewModel @Inject constructor(
@@ -39,8 +40,8 @@ class UserViewModel @Inject constructor(
                     level = 1,
                     streak = 0,
                     selectedAvatar = 1,
-                    selectedHabits = emptyList(),
-                    completedHabits = emptyList()
+                    selectedHabits = ArrayList(),
+                    completedHabits = ArrayList()
                 )
 
                 val result = userRepository.createUser(newUser)
@@ -142,9 +143,10 @@ class UserViewModel @Inject constructor(
                 val currentState = _userState.value
                 if (currentState is UserState.Success) {
                     val updatedHabits = currentState.user.completedHabits + habitId
-                    _userState.value = UserState.Success(
-                        currentState.user.copy(completedHabits = updatedHabits)
-                    )
+// TODO
+                //                    _userState.value = UserState.Success(
+//                        currentState.user.copy(completedHabits = updatedHabits)
+//                    )
                 }
 
             }

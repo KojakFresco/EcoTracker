@@ -3,6 +3,7 @@ package com.example.ecotracker.data.model
 data class User(
     val id: String = "",
     var name: String = "",
+    var email: String = "",
     var level: Int = 1,
     var experience: Int = 0,
     var streak: Int = 0,

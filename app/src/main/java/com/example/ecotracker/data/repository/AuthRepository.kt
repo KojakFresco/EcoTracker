@@ -54,8 +54,8 @@ class AuthRepository @Inject constructor(
                 level = 1,
                 streak = 0,
                 selectedAvatar = 1,
-                selectedHabits = emptyList(),
-                completedHabits = emptyList()
+                selectedHabits = ArrayList(),
+                completedHabits = ArrayList()
             )
         )
 

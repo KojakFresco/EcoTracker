@@ -4,14 +4,14 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
+import androidx.navigation.fragment.findNavController
+import com.example.ecotracker.R
 import com.example.ecotracker.databinding.FragmentSignInBinding
 import com.example.ecotracker.presentation.viewmodels.AuthState
 import com.example.ecotracker.presentation.viewmodels.AuthViewModel
-import com.google.android.material.R
 import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
@@ -51,7 +51,7 @@ class SignInFragment : Fragment() {
                     }
                     is AuthState.Authenticated -> {
                         // Переход на главный экран
-                        findNavController().navigate(R.id.action_to_main)
+                        // findNavController().navigate(R.id.action_to_main)
                     }
                     is AuthState.Error -> {
                         binding.progressBar.visibility = View.GONE
@@ -78,11 +78,11 @@ class SignInFragment : Fragment() {
         }
 
         binding.signUpTextView.setOnClickListener {
-            findNavController().navigate(R.id.action_to_signUp)
+            // findNavController().navigate(R.id.action_to_signUp)
         }
 
         binding.forgotPasswordTextView.setOnClickListener {
-            findNavController().navigate(R.id.action_to_resetPassword)
+            // findNavController().navigate(R.id.action_to_resetPassword)
         }
     }
 

@@ -28,10 +28,10 @@ class SplashFragment : Fragment() {
             authViewModel.currentUser.collect { user ->
                 if (user != null) {
                     // Пользователь авторизован - на главный экран
-                    findNavController().navigate(R.id.action_to_main)
+                    // findNavController().navigate(R.id.action_to_main)
                 } else {
                     // Не авторизован - на экран входа
-                    findNavController().navigate(R.id.action_to_signIn)
+                    // findNavController().navigate(R.id.action_to_signIn)
                 }
             }
         }
