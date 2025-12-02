@@ -1,35 +1,65 @@
 package com.example.ecotracker.data.repository
 
-import android.util.Log
-import com.example.ecotracker.HABIT_DONE_PREFIX
-import com.example.ecotracker.HABIT_IN_USE_PREFIX
-import com.example.ecotracker.LOG_LABEL
-import com.example.ecotracker.data.model.Habit
 import com.example.ecotracker.data.model.User
+import com.example.ecotracker.domain.util.Result
 import com.google.firebase.firestore.FirebaseFirestore
-import com.google.firebase.firestore.toObject
-import jakarta.inject.Singleton
 import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
+import javax.inject.Singleton
+
+
 
 @Singleton
 class UserRepository @Inject constructor(
-    private val db: FirebaseFirestore,
-    private val preferencesRepo: PreferencesRepository
+    private val firestore: FirebaseFirestore
 ) {
-    suspend fun getUser(): User? {
-        try {
-            // Отправляем запрос и ПРИОСТАНАВЛИВАЕМ функцию до получения результата
-            val document = db.collection("users").document("user_test_1").get().await()
-            val user = document.toObject<User>()!!.copy(id = document.id)
 
-            Log.d(LOG_LABEL, "Успешно получен пользователь: $user")
-            return user
+    suspend fun createUser(user: User): Result<Unit> = try {
+        firestore.collection("users")
+            .document(user.id)
+            .set(user)
+            .await()
+        Result.Success(Unit)
+    } catch (e: Exception) {
+        Result.Error(e)
+    }
 
-        } catch (e: Exception) {
-            Log.w(LOG_LABEL, "Ошибка при получении привычек", e)
-            return null
+    suspend fun getUser(userId: String): Result<User> = try {
+        val document = firestore.collection("users")
+            .document(userId)
+            .get()
+            .await()
+
+        if (document.exists()) {
+            val user = document.toObject(User::class.java)
+                ?: throw Exception("User data is null")
+            Result.Success(user)
+        } else {
+            Result.Error(Exception("User not found"))
         }
+    } catch (e: Exception) {
+        Result.Error(e)
+    }
 
+
+    suspend fun updateUser(userId: String, updates: Map<String, Any>): Result<Unit> = try {
+        firestore.collection("users")
+            .document(userId)
+            .update(updates)
+            .await()
+        Result.Success(Unit)
+    } catch (e: Exception) {
+        Result.Error(e)
+    }
+
+    // ПРОВЕРКА существования пользователя
+    suspend fun userExists(userId: String): Boolean = try {
+        val document = firestore.collection("users")
+            .document(userId)
+            .get()
+            .await()
+        document.exists()
+    } catch (e: Exception) {
+        false
     }
 }
