@@ -1,51 +1,55 @@
 package com.example.ecotracker.presentation.ui.activity
 
 import android.os.Bundle
-import androidx.activity.enableEdgeToEdge
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
-import androidx.appcompat.app.AppCompatDelegate
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
+import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
+import androidx.lifecycle.lifecycleScope
+import androidx.navigation.NavController
+import androidx.navigation.fragment.NavHostFragment
 import com.example.ecotracker.R
-import com.example.ecotracker.domain.managers.PermissionManager
-import com.example.ecotracker.domain.managers.NavigationManager
+import com.example.ecotracker.presentation.viewmodels.AuthViewModel
+import com.example.ecotracker.presentation.viewmodels.AuthState
 import dagger.hilt.android.AndroidEntryPoint
-import javax.inject.Inject
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
 
-    @Inject lateinit var permissionManager: PermissionManager
-    @Inject lateinit var navigationManager: NavigationManager
+    private val authViewModel: AuthViewModel by viewModels()
+    private lateinit var navController: NavController
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        // Устанавливаем сплеш-скрин. Это должно быть вызвано до super.onCreate()
+        val splashScreen = installSplashScreen()
         super.onCreate(savedInstanceState)
-        setupTheme()
-        setupUI()
-        checkPermissions()
-        setupNavigation()
-    }
-
-    private fun setupTheme() {
-        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
-    }
-
-    private fun setupUI() {
-        enableEdgeToEdge()
         setContentView(R.layout.activity_main)
 
-        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
-            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
-            v.setPadding(systemBars.left, systemBars.top, systemBars.right, 0)
-            insets
+        val navHostFragment = supportFragmentManager
+            .findFragmentById(R.id.nav_host_fragment) as NavHostFragment
+        navController = navHostFragment.navController
+
+        // Удерживаем сплеш-скрин на экране, пока мы проверяем авторизацию
+        splashScreen.setKeepOnScreenCondition {
+            authViewModel.authState.value is AuthState.Loading
         }
-    }
 
-    private fun checkPermissions() {
-        permissionManager.checkAndRequestNotificationsPermission(this)
-    }
+        // Как только состояние изменится, переходим на нужный экран
+        lifecycleScope.launch {
+            // Ждем первого состояния, которое не является Loading
+            val initialState = authViewModel.authState.first { it !is AuthState.Loading }
 
-    private fun setupNavigation() {
-        navigationManager.navigateToMainFragment(supportFragmentManager)
+            val navGraph = navController.navInflater.inflate(R.navigation.main_nav)
+
+            if (initialState is AuthState.Authenticated) {
+                // Если пользователь авторизован, стартовый экран - MainFragment
+                navGraph.setStartDestination(R.id.mainFragment)
+            } else {
+                // Если нет - SignInFragment
+                navGraph.setStartDestination(R.id.signInFragment)
+            }
+            navController.graph = navGraph
+        }
     }
 }

@@ -62,12 +62,8 @@ class AuthViewModel @Inject constructor(
             )
 
             _authState.value = when (result) {
-                is AuthResult.Success -> {
-                    AuthState.Authenticated(result.user)
-                }
-                is AuthResult.Error -> {
-                    AuthState.Error(result.errorMessage)
-                }
+                is AuthResult.Success -> AuthState.Authenticated(result.user)
+                is AuthResult.Error -> AuthState.Error(result.errorMessage)
                 else -> AuthState.Idle
             }
         }
@@ -85,12 +81,8 @@ class AuthViewModel @Inject constructor(
             )
 
             _authState.value = when (result) {
-                is AuthResult.Success -> {
-                    AuthState.Authenticated(result.user)
-                }
-                is AuthResult.Error -> {
-                    AuthState.Error(result.errorMessage)
-                }
+                is AuthResult.Success -> AuthState.Authenticated(result.user)
+                is AuthResult.Error -> AuthState.Error(result.errorMessage)
                 else -> AuthState.Idle
             }
         }

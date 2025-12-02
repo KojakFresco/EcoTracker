@@ -8,13 +8,11 @@
     tools:context=".presentation.ui.activity.MainActivity">
 
     <androidx.fragment.app.FragmentContainerView
-        android:id="@+id/fragmentContainer"
-        android:name="com.example.ecotracker.presentation.ui.fragments.MainFragment"
+        android:id="@+id/nav_host_fragment"
+        android:name="androidx.navigation.fragment.NavHostFragment"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:defaultNavHost="true"
+        app:navGraph="@navigation/main_nav" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

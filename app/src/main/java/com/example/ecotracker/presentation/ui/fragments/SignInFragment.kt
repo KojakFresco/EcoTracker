@@ -51,7 +51,7 @@ class SignInFragment : Fragment() {
                     }
                     is AuthState.Authenticated -> {
                         // Переход на главный экран
-                        // findNavController().navigate(R.id.action_to_main)
+                         findNavController().navigate(R.id.action_to_main)
                     }
                     is AuthState.Error -> {
                         binding.progressBar.visibility = View.GONE
@@ -78,11 +78,11 @@ class SignInFragment : Fragment() {
         }
 
         binding.signUpTextView.setOnClickListener {
-            // findNavController().navigate(R.id.action_to_signUp)
+             findNavController().navigate(R.id.action_to_signUp)
         }
 
         binding.forgotPasswordTextView.setOnClickListener {
-            // findNavController().navigate(R.id.action_to_resetPassword)
+             findNavController().navigate(R.id.action_to_resetPassword)
         }
     }
 

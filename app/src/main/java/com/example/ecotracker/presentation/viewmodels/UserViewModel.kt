@@ -143,10 +143,9 @@ class UserViewModel @Inject constructor(
                 val currentState = _userState.value
                 if (currentState is UserState.Success) {
                     val updatedHabits = currentState.user.completedHabits + habitId
-// TODO
-                //                    _userState.value = UserState.Success(
-//                        currentState.user.copy(completedHabits = updatedHabits)
-//                    )
+                    _userState.value = UserState.Success(
+                        currentState.user.copy(completedHabits = ArrayList(updatedHabits))
+                    )
                 }
 
             }

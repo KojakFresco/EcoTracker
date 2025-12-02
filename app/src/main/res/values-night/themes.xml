@@ -1,7 +1,7 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
     <!-- Base application theme. -->
     <style name="Base.Theme.EcoTracker" parent="Theme.Material3.DayNight.NoActionBar">
-        <!-- Customize your light theme here. -->
+        <!-- Customize your dark theme here. -->
         <item name="android:windowBackground">@color/background</item>
         <item name="android:textColor">@color/white</item>
         <item name="android:statusBarColor">@color/main</item>
@@ -10,7 +10,7 @@
         <item name="background">@color/white</item>
         <item name="android:textColorSecondary">@color/pale_white</item>
         <item name="alertDialogTheme">@style/AppTheme.Dialog</item>
-        <!-- <item name="colorPrimary">@color/my_light_primary</item> -->
+        <!-- <item name="colorPrimary">@color/my_dark_primary</item> -->
     </style>
 
     <style name="Indicator" parent="Widget.Material3.BottomNavigationView.ActiveIndicator">
@@ -18,6 +18,13 @@
     </style>
 
     <style name="Theme.EcoTracker" parent="Base.Theme.EcoTracker" />
+
+    <!-- New Splash Screen Theme -->
+    <style name="Theme.App.Starting" parent="Theme.SplashScreen">
+        <item name="windowSplashScreenBackground">@color/black</item>
+        <item name="windowSplashScreenAnimatedIcon">@mipmap/ic_launcher</item>
+        <item name="postSplashScreenTheme">@style/Theme.EcoTracker</item>
+    </style>
 
     <!--may be redundant-->
     <style name="AppTheme.Dialog" parent="Theme.MaterialComponents.DayNight.Dialog">
