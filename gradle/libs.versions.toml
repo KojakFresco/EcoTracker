@@ -15,6 +15,7 @@ legacySupportV4 = "1.0.0"
 recyclerview = "1.3.0"
 cardview = "1.0.0"
 preference = "1.2.0"
+firebaseCrashlyticsBuildtools = "3.0.6"
 
 [libraries]
 # androidx-constraintlayout-v221 = { module = "androidx.constraintlayout:constraintlayout", version.ref = "constraintlayoutVersion" }
@@ -31,6 +32,7 @@ androidx-legacy-support-v4 = { group = "androidx.legacy", name = "legacy-support
 androidx-recyclerview = { group = "androidx.recyclerview", name = "recyclerview", version.ref = "recyclerview" }
 androidx-cardview = { group = "androidx.cardview", name = "cardview", version.ref = "cardview" }
 androidx-preference = { group = "androidx.preference", name = "preference", version.ref = "preference" }
+firebase-crashlytics-buildtools = { group = "com.google.firebase", name = "firebase-crashlytics-buildtools", version.ref = "firebaseCrashlyticsBuildtools" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
