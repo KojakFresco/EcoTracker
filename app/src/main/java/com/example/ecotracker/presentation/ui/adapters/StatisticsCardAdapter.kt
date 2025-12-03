@@ -1,4 +1,4 @@
-package com.example.ecotracker.adapters
+package com.example.ecotracker.presentation.ui.adapters
 
 import android.view.LayoutInflater
 import android.view.ViewGroup

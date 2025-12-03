@@ -1,34 +1,34 @@
-package com.example.ecotracker.fragments
+package com.example.ecotracker.presentation.ui.fragments
 
 import android.app.Dialog
-import android.content.Context.MODE_PRIVATE
-import android.content.SharedPreferences
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.FrameLayout
-import androidx.core.content.edit
+import androidx.fragment.app.viewModels
+import androidx.lifecycle.lifecycleScope
+import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.example.ecotracker.HabitItem
 import com.example.ecotracker.LOG_LABEL
-import com.example.ecotracker.adapters.EditHabitsRecyclerViewAdapter
-import com.example.ecotracker.adapters.NewHabitItem
+import com.example.ecotracker.presentation.ui.adapters.EditHabitsRecyclerViewAdapter
 import com.example.ecotracker.databinding.FragmentEditHabitsBinding
-import com.example.ecotracker.habitsDescriptions
-import com.example.ecotracker.habitsIDs
-import com.example.ecotracker.habitsNames
+import com.example.ecotracker.presentation.viewmodels.HabitsViewModel
+import com.google.android.material.R
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
+import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.launch
 
+@AndroidEntryPoint
 class EditHabitsFragment : BottomSheetDialogFragment() {
 
     private var _binding: FragmentEditHabitsBinding? = null
     private val binding get() = _binding!!
 
-    private var habitsList: ArrayList<NewHabitItem> = ArrayList()
+    private val viewModel: HabitsViewModel by viewModels()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -43,20 +43,27 @@ class EditHabitsFragment : BottomSheetDialogFragment() {
         super.onViewCreated(view, savedInstanceState)
 
         val recyclerView: RecyclerView = binding.habitsRecycler
-        setUpHabitsList()
 
-        val adapter = EditHabitsRecyclerViewAdapter(activity, habitsList)
+        val adapter = EditHabitsRecyclerViewAdapter(requireActivity(), ArrayList())
         recyclerView.adapter = adapter
-        recyclerView.layoutManager = androidx.recyclerview.widget
-            .LinearLayoutManager(activity)
+        recyclerView.layoutManager = LinearLayoutManager(activity)
+
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewModel.habits.collect { newHabitsList ->
+                // Этот код будет выполняться каждый раз, когда данные в viewModel.habits обновляются
+                Log.d(LOG_LABEL, "Habits updated. New list size: ${newHabitsList.size}")
+                adapter.updateHabits(newHabitsList)
+            }
+        }
+        viewModel.loadHabits()
 
         binding.closeButton.setOnClickListener {
             dismiss()
         }
 
         binding.btnSave.setOnClickListener {
-            for (item in habitsList) {
-                saveHabitStateById(item.id, item.isAdded!!)
+            for (item in viewModel.habits.value) {
+                viewModel.saveIsHabitInUse(item.id, item.isAdded)
             }
             val result = Bundle().apply {
                 putBoolean("habitsUpdated", true) // Передаем флаг, что данные обновлены
@@ -66,8 +73,6 @@ class EditHabitsFragment : BottomSheetDialogFragment() {
             dismiss()
         }
 
-
-
     }
 
     // Этот метод делает окно полноэкранным
@@ -76,7 +81,7 @@ class EditHabitsFragment : BottomSheetDialogFragment() {
         dialog.setOnShowListener { dialogInterface ->
             val bottomSheetDialog = dialogInterface as BottomSheetDialog
             val bottomSheet = bottomSheetDialog.findViewById<View>(
-                com.google.android.material.R.id.design_bottom_sheet) as FrameLayout?
+                R.id.design_bottom_sheet) as FrameLayout?
 
             bottomSheet?.let {
                 val layoutParams = it.layoutParams
@@ -89,36 +94,6 @@ class EditHabitsFragment : BottomSheetDialogFragment() {
             }
         }
         return dialog
-    }
-
-    fun setUpHabitsList() {
-        for (id in habitsIDs) {
-            if (!habitsList.contains(NewHabitItem(id, habitsNames[id]!!, loadHabitById(id))))
-                habitsList.add(
-                    NewHabitItem(id, habitsNames[id]!!, loadHabitById(id)))
-        }
-    }
-
-    fun saveHabitStateById(id : String, isDone : Boolean) {
-        try {
-            val sp: SharedPreferences? = context?.getSharedPreferences("HABITS", MODE_PRIVATE)
-            sp?.edit {
-                this.putBoolean(id, isDone)
-            }
-            Log.d(LOG_LABEL, "Save success, id: $id")
-        } catch (e: Exception) {
-            Log.e(LOG_LABEL, "Save Error " + e.message)
-        }
-    }
-
-    fun loadHabitById(id : String) : Boolean? {
-        try {
-            val sp: SharedPreferences? = activity?.getSharedPreferences("HABITS", MODE_PRIVATE)
-            return sp?.getBoolean(id, false)
-        } catch (e: Exception) {
-            Log.e(LOG_LABEL, "Load error " + e.message)
-        }
-        return false
     }
 
     override fun onDestroyView() {

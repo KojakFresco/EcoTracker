@@ -6,7 +6,7 @@
     android:id="@+id/main_fragment"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".fragments.MainFragment">
+    tools:context=".presentation.ui.fragments.MainFragment">
 
     <androidx.fragment.app.FragmentContainerView
         android:id="@+id/inner_fragment"

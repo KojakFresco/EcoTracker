@@ -20,6 +20,9 @@
 .cxx
 local.properties
 
+
+app/google-services.json
+
 # BlueJ files
 *.ctxt
 

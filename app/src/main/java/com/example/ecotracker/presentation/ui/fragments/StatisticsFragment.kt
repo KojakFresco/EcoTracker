@@ -1,8 +1,7 @@
-package com.example.ecotracker.fragments
+package com.example.ecotracker.presentation.ui.fragments
 
 import android.os.Bundle
 import android.text.SpannableStringBuilder
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -10,37 +9,23 @@ import androidx.core.content.ContextCompat
 import androidx.core.text.bold
 import androidx.core.text.color
 import androidx.core.text.scale
-import androidx.core.text.underline
 import androidx.fragment.app.Fragment
-import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
-import com.example.ecotracker.HabitItem
-import com.example.ecotracker.LOG_LABEL
-import com.example.ecotracker.MainActivity
-import com.example.ecotracker.MyHabitsRecyclerViewAdapter
+import androidx.fragment.app.viewModels
 import com.example.ecotracker.R
-import com.example.ecotracker.adapters.StatisticItem
-import com.example.ecotracker.adapters.StatisticsCardAdapter
+import com.example.ecotracker.presentation.ui.adapters.StatisticItem
+import com.example.ecotracker.presentation.ui.adapters.StatisticsCardAdapter
 import com.example.ecotracker.databinding.FragmentStatisticsBinding
-import com.example.ecotracker.habitsDescriptions
-import com.example.ecotracker.habitsNames
+import com.example.ecotracker.presentation.viewmodels.StatisticsViewModel
+import dagger.hilt.android.AndroidEntryPoint
 import java.util.Locale
-import kotlin.coroutines.Continuation
 
-
-// TODO: Rename parameter arguments, choose names that match
-// the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-private const val ARG_PARAM1 = "param1"
-private const val ARG_PARAM2 = "param2"
-
-/**
- * A simple [Fragment] subclass.
- * Use the [StatisticsFragment.newInstance] factory method to
- * create an instance of this fragment.
- */
+@AndroidEntryPoint
 class StatisticsFragment : Fragment() {
     private var _binding: FragmentStatisticsBinding? = null
     private val binding get() = _binding!!
+
+    private val viewModel: StatisticsViewModel by viewModels()
+
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -62,18 +47,18 @@ class StatisticsFragment : Fragment() {
 
         binding.xpLabel.text = SpannableStringBuilder()
             .append(getString(R.string.your_level) + ": ")
-            .bold {scale(1.2f) {color(ContextCompat.getColor(context!!, R.color.green_align))
+            .bold {scale(1.2f) {color(ContextCompat.getColor(requireContext(), R.color.green_align))
             {append(12.toString())} }}
             .append("\n" + getString(R.string.xp_amount) + ": ")
-            .scale(1.2f) {color(ContextCompat.getColor(context!!, R.color.light_green_align))
+            .scale(1.2f) {color(ContextCompat.getColor(requireContext(), R.color.light_green_align))
             {append(1142.toString() + " XP")} }
 
         binding.streakLabel.text = SpannableStringBuilder()
             .append(getString(R.string.current_streak) + ": ")
-            .color(ContextCompat.getColor(context!!, R.color.red_align))
-            {append(String.format(Locale.getDefault(), "%3d", (activity as MainActivity).loadInt("counter")))}
+            .color(ContextCompat.getColor(requireContext(), R.color.red_align))
+            {append(String.format(Locale.getDefault(), "%3d", viewModel.getStreakCounter()))}
             .append(" " + getString(R.string.days) + "\n" + getString(R.string.your_record) + ": ")
-            .append(String.format(Locale.getDefault(), "%6d", (activity as MainActivity).loadInt("counter")))
+            .append(String.format(Locale.getDefault(), "%6d", viewModel.getStreakRecord()))
             .append(" " + getString(R.string.days))
 
         val adapter = StatisticsCardAdapter(statisticItems)

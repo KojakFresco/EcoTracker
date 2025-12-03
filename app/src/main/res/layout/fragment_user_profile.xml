@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:fillViewport="true"
-    tools:context=".fragments.ProfileFragment" >
+    tools:context=".presentation.ui.fragments.UserProfileFragment" >
 
     <LinearLayout
         android:layout_width="match_parent"
