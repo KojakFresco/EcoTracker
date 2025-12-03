@@ -31,6 +31,7 @@
     <string name="place_format" translatable="false">#%d</string>
     <string name="xp_format" translatable="false">%d XP</string>
     <string name="level_format" translatable="false">%d lvl</string>
+    <string name="you">You</string>
 
     <!-- Auth Screens -->
     <string name="hint_email">Email</string>

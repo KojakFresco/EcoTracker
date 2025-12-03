@@ -16,6 +16,7 @@
     <!-- Новые переводы для экранов аутентификации -->
 
     <!-- Общие -->
+    <string name="you">Вы</string>
     <string name="hint_email">Электронная почта</string>
     <string name="hint_password">Пароль</string>
     <string name="hint_name">Имя</string>

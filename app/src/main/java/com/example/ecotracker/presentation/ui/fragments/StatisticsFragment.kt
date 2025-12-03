@@ -17,12 +17,12 @@ import com.example.ecotracker.data.model.User
 import com.example.ecotracker.presentation.ui.adapters.StatisticItem
 import com.example.ecotracker.presentation.ui.adapters.StatisticsCardAdapter
 import com.example.ecotracker.databinding.FragmentStatisticsBinding
-import com.example.ecotracker.presentation.viewmodels.AuthViewModel
 import com.example.ecotracker.presentation.viewmodels.UserState
 import com.example.ecotracker.presentation.viewmodels.UserViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 import java.util.Locale
+import kotlin.math.roundToInt
 
 @AndroidEntryPoint
 class StatisticsFragment : Fragment() {
@@ -30,7 +30,6 @@ class StatisticsFragment : Fragment() {
     private val binding get() = _binding!!
 
     private val userViewModel: UserViewModel by activityViewModels()
-    private val authViewModel: AuthViewModel by activityViewModels()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -43,28 +42,16 @@ class StatisticsFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        // Запускаем загрузку/обновление данных пользователя
-        authViewModel.currentUser.value?.uid?.let {
-            userViewModel.loadUser(it)
-        }
-
-        val statisticItems = listOf(
-            StatisticItem("Сэкономлено воды", R.drawable.image_splash, "525 литров", "Это 26 полных ванн"),
-            StatisticItem("Сокращено выбросов CO2", R.drawable.icon_home, "150 кг", "Как если бы вы проехали 750 км на машине"),
-            StatisticItem("Переработано мусора", R.drawable.icon_home, "35 кг", "Этого хватит на 1000 листов бумаги"),
-        )
-
-        val adapter = StatisticsCardAdapter(statisticItems)
-        binding.viewPagerStatistics.adapter = adapter
-
         observeUserState()
 
         binding.ivArrowLeft.setOnClickListener {
+            val adapter = binding.viewPagerStatistics.adapter ?: return@setOnClickListener
             val currentItem = binding.viewPagerStatistics.currentItem
             binding.viewPagerStatistics.currentItem = (currentItem - 1 + adapter.itemCount) % adapter.itemCount
         }
 
         binding.ivArrowRight.setOnClickListener {
+            val adapter = binding.viewPagerStatistics.adapter ?: return@setOnClickListener
             val currentItem = binding.viewPagerStatistics.currentItem
             binding.viewPagerStatistics.currentItem = (currentItem + 1) % adapter.itemCount
         }
@@ -90,6 +77,52 @@ class StatisticsFragment : Fragment() {
     }
 
     private fun updateUi(user: User) {
+        // Обновляем текстовые поля с уровнем и серией
+        updateLabels(user)
+        
+        // Создаем карточки статистики
+        val statisticItems = createStatisticItems(user)
+        val adapter = StatisticsCardAdapter(statisticItems)
+        binding.viewPagerStatistics.adapter = adapter
+    }
+
+    private fun createStatisticItems(user: User): List<StatisticItem> {
+        // Предполагаемые средние значения для расчетов
+        val avgShowerLiters = 20
+        val avgCarKmPerKgCo2 = 5
+        val avgPaperSheetsPerKg = 1
+
+        val waterSaved = user.waterRescue.roundToInt()
+        val co2Reduced = user.co2Reduction.roundToInt()
+        val wasteRecycled = user.wasteDisposal.roundToInt()
+
+        val bathsSaved = (waterSaved / avgShowerLiters)
+        val carKmSaved = (co2Reduced * avgCarKmPerKgCo2)
+        val paperSaved = (wasteRecycled * avgPaperSheetsPerKg)
+
+        return listOf(
+            StatisticItem(
+                "Сэкономлено воды",
+                R.drawable.image_splash,
+                "$waterSaved литров",
+                "Это примерно $bathsSaved полных ванн"
+            ),
+            StatisticItem(
+                "Сокращено выбросов CO2",
+                R.drawable.icon_co2,
+                "$co2Reduced кг",
+                "Как если бы вы проехали $carKmSaved км на машине"
+            ),
+            StatisticItem(
+                "Переработано мусора",
+                R.drawable.icon_recycle,
+                "$wasteRecycled кг",
+                "Этого хватит на $paperSaved листов бумаги"
+            ),
+        )
+    }
+
+    private fun updateLabels(user: User) {
         binding.xpLabel.text = SpannableStringBuilder()
             .append(getString(R.string.your_level) + ": ")
             .bold {scale(1.2f) {color(ContextCompat.getColor(requireContext(), R.color.green_align))

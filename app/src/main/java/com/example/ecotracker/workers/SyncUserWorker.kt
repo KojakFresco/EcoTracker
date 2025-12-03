@@ -6,6 +6,7 @@ import androidx.hilt.work.HiltWorker
 import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
 import com.example.ecotracker.data.repository.PreferencesRepository
+import com.example.ecotracker.data.repository.PublicUser
 import com.google.firebase.firestore.FirebaseFirestore
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
@@ -20,7 +21,6 @@ class SyncUserWorker @AssistedInject constructor(
 ) : CoroutineWorker(appContext, workerParams) {
 
     override suspend fun doWork(): Result {
-        // Изменили логику: теперь загружаем ID и объект отдельно
         val userIdToSync = prefsRepository.loadCachedUserId()
         val userToSync = prefsRepository.loadCachedUserObject()
 
@@ -31,12 +31,26 @@ class SyncUserWorker @AssistedInject constructor(
 
         return try {
             Log.i("SyncUserWorker", "Starting user sync for $userIdToSync")
-            firestore.collection("users")
-                .document(userIdToSync)
-                .set(userToSync) // Перезаписываем весь объект целиком
+
+            // Создаем публичный объект данных
+            val publicUser = PublicUser(
+                name = userToSync.name,
+                level = userToSync.level,
+                experience = userToSync.experience,
+                selectedAvatar = userToSync.selectedAvatar
+            )
+
+            // Записываем данные в обе коллекции
+            val userDocRef = firestore.collection("users").document(userIdToSync)
+            val leaderboardDocRef = firestore.collection("leaderboard").document(userIdToSync)
+
+            firestore.batch()
+                .set(userDocRef, userToSync)
+                .set(leaderboardDocRef, publicUser)
+                .commit()
                 .await()
 
-            Log.i("SyncUserWorker", "Sync successful!")
+            Log.i("SyncUserWorker", "Sync successful for both collections!")
             Result.success()
         } catch (e: Exception) {
             Log.e("SyncUserWorker", "Sync failed. Will retry later.", e)
