@@ -27,9 +27,35 @@
     <string name="days">days</string>
     <string name="current_streak">Current streak</string>
     <string name="your_record">Your record</string>
-    <!-- ... другие ваши строки ... -->
 
     <string name="place_format" translatable="false">#%d</string>
     <string name="xp_format" translatable="false">%d XP</string>
     <string name="level_format" translatable="false">%d lvl</string>
+
+    <!-- Auth Screens -->
+    <string name="hint_email">Email</string>
+    <string name="hint_password">Password</string>
+    <string name="button_sign_in">Sign In</string>
+    <string name="prompt_sign_up">Don\'t have an account? Sign Up</string>
+    <string name="prompt_forgot_password">Forgot password?</string>
+    <string name="hint_name">Name</string>
+    <string name="hint_confirm_password">Confirm Password</string>
+    <string name="button_sign_up">Sign Up</string>
+    <string name="prompt_sign_in">Already have an account? Sign In</string>
+    <string name="title_reset_password">Reset Password</string>
+    <string name="description_reset_password">Enter your email address and we will send you a link to reset your password</string>
+    <string name="button_send_reset_link">Send Reset Link</string>
+    <string name="prompt_back_to_sign_in">Back to Sign In</string>
+
+    <!-- Validation Errors -->
+    <string name="error_email_required">Email is required</string>
+    <string name="error_password_required">Password is required</string>
+    <string name="error_name_required">Name is required</string>
+    <string name="error_password_too_short">Password must be at least 6 characters</string>
+    <string name="error_passwords_do_not_match">Passwords do not match</string>
+    <string name="error_invalid_email">Please enter a valid email</string>
+
+    <!-- Messages -->
+    <string name="message_password_reset_sent">Password reset email sent.</string>
+
 </resources>

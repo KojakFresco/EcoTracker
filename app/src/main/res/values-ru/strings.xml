@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <!-- Уже существующие переводы -->
     <string name="my_habits">Мои привычки</string>
     <string name="statistics">Статистика</string>
     <string name="rating">Рейтинг</string>
@@ -11,4 +12,39 @@
     <string name="days">дней</string>
     <string name="current_streak">Текущая серия</string>
     <string name="your_record">Ваш рекорд</string>
+
+    <!-- Новые переводы для экранов аутентификации -->
+
+    <!-- Общие -->
+    <string name="hint_email">Электронная почта</string>
+    <string name="hint_password">Пароль</string>
+    <string name="hint_name">Имя</string>
+
+    <!-- Экран входа -->
+    <string name="button_sign_in">Войти</string>
+    <string name="prompt_sign_up">Нет аккаунта? Зарегистрироваться</string>
+    <string name="prompt_forgot_password">Забыли пароль?</string>
+
+    <!-- Экран регистрации -->
+    <string name="hint_confirm_password">Подтвердите пароль</string>
+    <string name="button_sign_up">Зарегистрироваться</string>
+    <string name="prompt_sign_in">Уже есть аккаунт? Войти</string>
+
+    <!-- Экран сброса пароля -->
+    <string name="title_reset_password">Сброс пароля</string>
+    <string name="description_reset_password">Введите ваш email, и мы вышлем ссылку для сброса пароля</string>
+    <string name="button_send_reset_link">Отправить ссылку</string>
+    <string name="prompt_back_to_sign_in">Назад ко входу</string>
+
+    <!-- Ошибки валидации -->
+    <string name="error_email_required">Требуется электронная почта</string>
+    <string name="error_password_required">Требуется пароль</string>
+    <string name="error_name_required">Требуется имя</string>
+    <string name="error_password_too_short">Пароль должен быть не менее 6 символов</string>
+    <string name="error_passwords_do_not_match">Пароли не совпадают</string>
+    <string name="error_invalid_email">Введите корректный email</string>
+
+    <!-- Сообщения -->
+    <string name="message_password_reset_sent">Письмо для сброса пароля отправлено.</string>
+
 </resources>

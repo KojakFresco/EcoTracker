@@ -64,6 +64,9 @@ dependencies {
     implementation("androidx.coordinatorlayout:coordinatorlayout:1.3.0")
     implementation("com.github.kirich1409:viewbindingpropertydelegate:1.5.9")
 
+    // Splash Screen API
+    implementation("androidx.core:core-splashscreen:1.0.1")
+
     // Lifecycle
     implementation("androidx.lifecycle:lifecycle-common-java8:2.10.0")
     implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.10.0")
