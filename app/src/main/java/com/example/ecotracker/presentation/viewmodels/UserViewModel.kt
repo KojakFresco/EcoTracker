@@ -47,6 +47,12 @@ class UserViewModel @Inject constructor(
         updateUser(updatedUser)
     }
 
+    fun updateUserProfile(newName: String, newAvatarId: Int) {
+        val currentUser = (_userState.value as? UserState.Success)?.user ?: return
+        val updatedUser = currentUser.copy(name = newName, selectedAvatar = newAvatarId)
+        updateUser(updatedUser)
+    }
+
     fun updateUserAvatar(avatarIndex: Int) {
         val currentUser = (_userState.value as? UserState.Success)?.user ?: return
         val updatedUser = currentUser.copy(selectedAvatar = avatarIndex)

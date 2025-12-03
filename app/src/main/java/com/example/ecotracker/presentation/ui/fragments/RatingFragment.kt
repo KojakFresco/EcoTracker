@@ -34,7 +34,7 @@ class RatingFragment : Fragment() {
 
         val myCard = binding.myRatingCard
         myCard.position.text = context?.getString(R.string.place_format, 36)
-        myCard.avatar.setImageResource(R.drawable.wolf_ava)
+        myCard.avatar.setImageResource(R.drawable.avatar_3)
         myCard.username.text = "User 36"
         myCard.xp.text = context?.getString(R.string.xp_format, 1888)
         myCard.level.text = context?.getString(R.string.level_format, 12)
@@ -53,7 +53,7 @@ class RatingFragment : Fragment() {
             ratingList.add(
                 RatingItem(
                     i,
-                    R.drawable.wolf_ava,
+                    R.drawable.avatar_3,
                     "User $i",
                     i * 100,
                     i
