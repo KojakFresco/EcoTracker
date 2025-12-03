@@ -143,17 +143,6 @@
                 android:textSize="12sp"
                 android:textColor="@color/pale_white" />
 
-            <!-- Условия и политика конфиденциальности -->
-            <TextView
-                android:id="@+id/termsAndPolicy"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Условия и Политика конфиденциальности"
-                android:textSize="12sp"
-                android:textColor="@color/pale_white"
-                android:clickable="true"
-                android:focusable="true" />
-
         </LinearLayout>
 
     </LinearLayout>

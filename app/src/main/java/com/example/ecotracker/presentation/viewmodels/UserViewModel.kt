@@ -32,7 +32,8 @@ class UserViewModel @Inject constructor(
     private val _experienceEvents = MutableSharedFlow<ExperienceEvent>()
     val experienceEvents = _experienceEvents.asSharedFlow()
 
-    private var currentUserId: String? = null
+    var currentUserId: String? = null
+        private set
 
     fun loadUser(userId: String) {
         if (_userState.value is UserState.Loading && this.currentUserId == userId) return

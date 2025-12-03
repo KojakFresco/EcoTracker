@@ -17,7 +17,6 @@ import com.example.ecotracker.data.model.User
 import com.example.ecotracker.presentation.ui.adapters.StatisticItem
 import com.example.ecotracker.presentation.ui.adapters.StatisticsCardAdapter
 import com.example.ecotracker.databinding.FragmentStatisticsBinding
-import com.example.ecotracker.presentation.viewmodels.AuthViewModel
 import com.example.ecotracker.presentation.viewmodels.UserState
 import com.example.ecotracker.presentation.viewmodels.UserViewModel
 import dagger.hilt.android.AndroidEntryPoint
@@ -30,7 +29,6 @@ class StatisticsFragment : Fragment() {
     private val binding get() = _binding!!
 
     private val userViewModel: UserViewModel by activityViewModels()
-    private val authViewModel: AuthViewModel by activityViewModels()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -42,11 +40,6 @@ class StatisticsFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
-        // Запускаем загрузку/обновление данных пользователя
-        authViewModel.currentUser.value?.uid?.let {
-            userViewModel.loadUser(it)
-        }
 
         val statisticItems = listOf(
             StatisticItem("Сэкономлено воды", R.drawable.image_splash, "525 литров", "Это 26 полных ванн"),
