@@ -45,9 +45,10 @@ class AuthRepository @Inject constructor(
 
         val userId = authResult.user?.uid ?: throw Exception("User ID is null")
 
+        // Изменили вызов userRepository.createUser
         userRepository.createUser(
+            userId,
             User(
-                id = userId,
                 name = signUpData.name,
                 email = signUpData.email,
                 experience = 0,
@@ -72,9 +73,7 @@ class AuthRepository @Inject constructor(
         ).await()
 
         authResult.user?.uid?.let { userId ->
-            userRepository.updateUser(userId, mapOf(
-                "lastLogin" to FieldValue.serverTimestamp()
-            ))
+            userRepository.updateLastLoginTimestamp(userId)
         }
 
         AuthResult.Success(authResult.user)

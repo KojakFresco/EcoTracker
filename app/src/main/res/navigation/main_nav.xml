@@ -3,7 +3,14 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/main_nav"
-    app:startDestination="@id/splashFragment"> <!-- Новый стартовый экран -->
+    app:startDestination="@id/splashFragment">
+
+    <!-- Глобальное действие для перехода на главный экран -->
+    <action
+        android:id="@+id/action_global_mainFragment"
+        app:destination="@id/mainFragment"
+        app:popUpTo="@id/main_nav" 
+        app:popUpToInclusive="true" />
 
     <fragment
         android:id="@+id/splashFragment"
@@ -31,12 +38,7 @@
             app:destination="@id/signUpFragment" />
         <action
             android:id="@+id/action_to_resetPassword"
-            app:destination="@id/resetPasswordFragment" />
-        <action
-            android:id="@+id/action_to_main"
-            app:destination="@id/mainFragment"
-            app:popUpTo="@id/main_nav"
-            app:popUpToInclusive="true" />
+            app:destination="@id/forgotPasswordFragment" />
     </fragment>
 
     <fragment
@@ -46,10 +48,14 @@
         tools:layout="@layout/fragment_sign_up" />
 
     <fragment
-        android:id="@+id/resetPasswordFragment"
-        android:name="com.example.ecotracker.presentation.ui.fragments.ResetPasswordFragment"
+        android:id="@+id/forgotPasswordFragment"
+        android:name="com.example.ecotracker.presentation.ui.fragments.ForgotPasswordFragment"
         android:label="fragment_reset_password"
-        tools:layout="@layout/fragment_reset_password" />
+        tools:layout="@layout/fragment_forgot_password" >
+        <action
+            android:id="@+id/action_forgotPasswordFragment_to_signInFragment"
+            app:destination="@id/signInFragment" />
+    </fragment>
 
     <fragment
         android:id="@+id/mainFragment"

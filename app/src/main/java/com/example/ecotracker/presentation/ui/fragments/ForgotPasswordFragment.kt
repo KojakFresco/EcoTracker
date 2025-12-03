@@ -1,6 +1,7 @@
 package com.example.ecotracker.presentation.ui.fragments
 
 import android.os.Bundle
+import android.util.Patterns
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -9,17 +10,17 @@ import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.example.ecotracker.R
-import com.example.ecotracker.databinding.FragmentSignInBinding
-import com.example.ecotracker.presentation.viewmodels.AuthState
+import com.example.ecotracker.databinding.FragmentForgotPasswordBinding
 import com.example.ecotracker.presentation.viewmodels.AuthViewModel
+import com.example.ecotracker.presentation.viewmodels.PasswordResetState
 import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
-class SignInFragment : Fragment() {
+class ForgotPasswordFragment : Fragment() {
 
-    private var _binding: FragmentSignInBinding? = null
+    private var _binding: FragmentForgotPasswordBinding? = null
     private val binding get() = _binding!!
 
     private val authViewModel: AuthViewModel by activityViewModels()
@@ -29,7 +30,7 @@ class SignInFragment : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        _binding = FragmentSignInBinding.inflate(inflater, container, false)
+        _binding = FragmentForgotPasswordBinding.inflate(inflater, container, false)
         return binding.root
     }
 
@@ -42,23 +43,25 @@ class SignInFragment : Fragment() {
 
     private fun setupObservers() {
         viewLifecycleOwner.lifecycleScope.launch {
-            authViewModel.authState.collect { state ->
+            authViewModel.passwordResetState.collect { state ->
                 when (state) {
-                    is AuthState.Loading -> {
+                    is PasswordResetState.Loading -> {
                         binding.progressBar.visibility = View.VISIBLE
-                        binding.signInButton.isEnabled = false
+                        binding.resetPasswordButton.isEnabled = false
                     }
-                    is AuthState.Authenticated -> {
-                        findNavController().navigate(R.id.action_global_mainFragment)
-                    }
-                    is AuthState.Error -> {
+                    is PasswordResetState.Success -> {
                         binding.progressBar.visibility = View.GONE
-                        binding.signInButton.isEnabled = true
+                        Snackbar.make(binding.root, getString(R.string.message_password_reset_sent), Snackbar.LENGTH_LONG).show()
+                        findNavController().navigateUp() // Возвращаемся на экран входа
+                    }
+                    is PasswordResetState.Error -> {
+                        binding.progressBar.visibility = View.GONE
+                        binding.resetPasswordButton.isEnabled = true
                         showError(state.message)
                     }
-                    else -> {
+                    is PasswordResetState.Idle -> {
                         binding.progressBar.visibility = View.GONE
-                        binding.signInButton.isEnabled = true
+                        binding.resetPasswordButton.isEnabled = true
                     }
                 }
             }
@@ -66,42 +69,26 @@ class SignInFragment : Fragment() {
     }
 
     private fun setupClickListeners() {
-        binding.signInButton.setOnClickListener {
+        binding.resetPasswordButton.setOnClickListener {
             val email = binding.emailEditText.text.toString().trim()
-            val password = binding.passwordEditText.text.toString()
-
-            if (validateInput(email, password)) {
-                authViewModel.signIn(email, password)
+            if (validateEmail(email)) {
+                authViewModel.sendPasswordResetEmail(email)
             }
         }
 
-        binding.signUpTextView.setOnClickListener {
-             findNavController().navigate(R.id.action_to_signUp)
-        }
-
-        binding.forgotPasswordTextView.setOnClickListener {
-             findNavController().navigate(R.id.action_to_resetPassword)
+        binding.backToSignInTextView.setOnClickListener {
+            findNavController().navigateUp()
         }
     }
 
-    private fun validateInput(email: String, password: String): Boolean {
-        var isValid = true
-
-        if (email.isBlank()) {
-            binding.emailInputLayout.error = getString(R.string.error_email_required)
-            isValid = false
-        } else {
+    private fun validateEmail(email: String): Boolean {
+        return if (email.isNotBlank() && Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
             binding.emailInputLayout.error = null
-        }
-
-        if (password.isBlank()) {
-            binding.passwordInputLayout.error = getString(R.string.error_password_required)
-            isValid = false
+            true
         } else {
-            binding.passwordInputLayout.error = null
+            binding.emailInputLayout.error = getString(R.string.error_invalid_email)
+            false
         }
-
-        return isValid
     }
 
     private fun showError(message: String) {
@@ -110,6 +97,7 @@ class SignInFragment : Fragment() {
 
     override fun onDestroyView() {
         super.onDestroyView()
+        authViewModel.resetPasswordState() // Сбрасываем состояние, чтобы Snackbar не появился снова
         _binding = null
     }
 }

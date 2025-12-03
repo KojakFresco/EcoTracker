@@ -2,7 +2,8 @@
 package com.example.ecotracker.data.repository
 
 import android.content.SharedPreferences
-import com.example.ecotracker.KEY_USER_CACHE
+import com.example.ecotracker.KEY_CACHED_USER_ID
+import com.example.ecotracker.KEY_CACHED_USER_OBJECT
 import com.example.ecotracker.data.model.User
 import com.google.gson.Gson
 import java.time.LocalDateTime
@@ -42,13 +43,21 @@ class PreferencesRepository @Inject constructor(
 
     fun loadBoolean(name: String, defaultValue: Boolean): Boolean = prefs.getBoolean(name, defaultValue)
 
-    fun saveUser(user: User) {
-        val userJson = gson.toJson(user)
-        prefs.edit().putString(KEY_USER_CACHE, userJson).apply()
+    fun saveCachedUserId(userId: String) {
+        prefs.edit().putString(KEY_CACHED_USER_ID, userId).apply()
     }
 
-    fun loadUser(): User? {
-        val userJson = prefs.getString(KEY_USER_CACHE, null)
+    fun saveCachedUserObject(user: User) {
+        val userJson = gson.toJson(user)
+        prefs.edit().putString(KEY_CACHED_USER_OBJECT, userJson).apply()
+    }
+
+    fun loadCachedUserId(): String? {
+        return prefs.getString(KEY_CACHED_USER_ID, null)
+    }
+
+    fun loadCachedUserObject(): User? {
+        val userJson = prefs.getString(KEY_CACHED_USER_OBJECT, null)
         return if (userJson != null) {
             gson.fromJson(userJson, User::class.java)
         } else {

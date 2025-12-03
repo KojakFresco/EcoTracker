@@ -9,7 +9,7 @@ import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.example.ecotracker.R
-import com.example.ecotracker.databinding.FragmentSignInBinding
+import com.example.ecotracker.databinding.FragmentSignUpBinding
 import com.example.ecotracker.presentation.viewmodels.AuthState
 import com.example.ecotracker.presentation.viewmodels.AuthViewModel
 import com.google.android.material.snackbar.Snackbar
@@ -17,9 +17,9 @@ import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
-class SignInFragment : Fragment() {
+class SignUpFragment : Fragment() {
 
-    private var _binding: FragmentSignInBinding? = null
+    private var _binding: FragmentSignUpBinding? = null
     private val binding get() = _binding!!
 
     private val authViewModel: AuthViewModel by activityViewModels()
@@ -29,7 +29,7 @@ class SignInFragment : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        _binding = FragmentSignInBinding.inflate(inflater, container, false)
+        _binding = FragmentSignUpBinding.inflate(inflater, container, false)
         return binding.root
     }
 
@@ -46,19 +46,19 @@ class SignInFragment : Fragment() {
                 when (state) {
                     is AuthState.Loading -> {
                         binding.progressBar.visibility = View.VISIBLE
-                        binding.signInButton.isEnabled = false
+                        binding.signUpButton.isEnabled = false
                     }
                     is AuthState.Authenticated -> {
                         findNavController().navigate(R.id.action_global_mainFragment)
                     }
                     is AuthState.Error -> {
                         binding.progressBar.visibility = View.GONE
-                        binding.signInButton.isEnabled = true
+                        binding.signUpButton.isEnabled = true
                         showError(state.message)
                     }
                     else -> {
                         binding.progressBar.visibility = View.GONE
-                        binding.signInButton.isEnabled = true
+                        binding.signUpButton.isEnabled = true
                     }
                 }
             }
@@ -66,26 +66,31 @@ class SignInFragment : Fragment() {
     }
 
     private fun setupClickListeners() {
-        binding.signInButton.setOnClickListener {
+        binding.signUpButton.setOnClickListener {
+            val name = binding.nameEditText.text.toString().trim()
             val email = binding.emailEditText.text.toString().trim()
             val password = binding.passwordEditText.text.toString()
+            val confirmPassword = binding.confirmPasswordEditText.text.toString()
 
-            if (validateInput(email, password)) {
-                authViewModel.signIn(email, password)
+            if (validateInput(name, email, password, confirmPassword)) {
+                authViewModel.signUp(name, email, password)
             }
         }
 
-        binding.signUpTextView.setOnClickListener {
-             findNavController().navigate(R.id.action_to_signUp)
-        }
-
-        binding.forgotPasswordTextView.setOnClickListener {
-             findNavController().navigate(R.id.action_to_resetPassword)
+        binding.signInTextView.setOnClickListener {
+            findNavController().navigateUp()
         }
     }
 
-    private fun validateInput(email: String, password: String): Boolean {
+    private fun validateInput(name: String, email: String, password: String, confirm: String): Boolean {
         var isValid = true
+
+        if (name.isBlank()) {
+            binding.nameInputLayout.error = getString(R.string.error_name_required)
+            isValid = false
+        } else {
+            binding.nameInputLayout.error = null
+        }
 
         if (email.isBlank()) {
             binding.emailInputLayout.error = getString(R.string.error_email_required)
@@ -94,11 +99,18 @@ class SignInFragment : Fragment() {
             binding.emailInputLayout.error = null
         }
 
-        if (password.isBlank()) {
-            binding.passwordInputLayout.error = getString(R.string.error_password_required)
+        if (password.length < 6) {
+            binding.passwordInputLayout.error = getString(R.string.error_password_too_short)
             isValid = false
         } else {
             binding.passwordInputLayout.error = null
+        }
+
+        if (password != confirm) {
+            binding.confirmPasswordInputLayout.error = getString(R.string.error_passwords_do_not_match)
+            isValid = false
+        } else {
+            binding.confirmPasswordInputLayout.error = null
         }
 
         return isValid
