@@ -1,6 +1,7 @@
 package com.example.ecotracker.presentation.viewmodels
 
 import androidx.lifecycle.ViewModel
+import com.example.ecotracker.KEY_EXPERIENCE
 import com.example.ecotracker.KEY_STREAK_COUNTER
 import com.example.ecotracker.KEY_STREAK_RECORD
 import com.example.ecotracker.data.repository.PreferencesRepository
@@ -19,4 +20,9 @@ class StatisticsViewModel @Inject constructor(
     fun getStreakRecord(): Int {
         return preferencesRepo.loadInt(KEY_STREAK_RECORD, 0)
     }
+
+    fun getExperience(): Int {
+        return preferencesRepo.loadInt(KEY_EXPERIENCE, 0)
+    }
+
 }
