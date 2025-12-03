@@ -5,25 +5,21 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
-import androidx.work.ExistingWorkPolicy
-import androidx.work.OneTimeWorkRequestBuilder
-import androidx.work.WorkInfo
-import androidx.work.WorkManager
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.example.ecotracker.LOG_LABEL
+import com.example.ecotracker.R
 import com.example.ecotracker.data.model.Habit
 import com.example.ecotracker.databinding.FragmentMyHabitsBinding
 import com.example.ecotracker.presentation.ui.adapters.MyHabitsRecyclerViewAdapter
+import com.example.ecotracker.presentation.viewmodels.ExperienceEvent
 import com.example.ecotracker.presentation.viewmodels.HabitsViewModel
-import com.example.ecotracker.workers.ResetHabitsWorker
+import com.example.ecotracker.presentation.viewmodels.UserViewModel
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.flow.collectLatest
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
@@ -32,14 +28,14 @@ class MyHabitsFragment : Fragment() {
     private val binding get() = _binding!!
 
     private lateinit var myHabitsAdapter: MyHabitsRecyclerViewAdapter
-    private val viewModel: HabitsViewModel by viewModels()
+    private val habitsViewModel: HabitsViewModel by viewModels()
+    private val userViewModel: UserViewModel by activityViewModels()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        _binding = FragmentMyHabitsBinding
-            .inflate(inflater, container, false)
+        _binding = FragmentMyHabitsBinding.inflate(inflater, container, false)
         return binding.root
     }
 
@@ -48,7 +44,7 @@ class MyHabitsFragment : Fragment() {
 
         setupRecyclerView()
         setupClickListeners()
-        observeViewModel()
+        observeViewModels()
     }
 
     private fun setupRecyclerView() {
@@ -63,34 +59,11 @@ class MyHabitsFragment : Fragment() {
         binding.fabAddHabit.setOnClickListener {
             EditHabitsFragment.newInstance().show(childFragmentManager, EditHabitsFragment.TAG)
         }
-
-        // --- ВРЕМЕННЫЙ КОД ДЛЯ ТЕСТИРОВАНИЯ --- //
-        // TODO: Удалите этот блок после проверки
-        binding.infoLabel.setOnClickListener {
-            Toast.makeText(requireContext(), "Принудительный сброс привычек...", Toast.LENGTH_SHORT).show()
-            val workManager = WorkManager.getInstance(requireContext())
-            val oneTimeResetRequest = OneTimeWorkRequestBuilder<ResetHabitsWorker>().build()
-
-            workManager.enqueueUniqueWork("oneTimeReset", ExistingWorkPolicy.REPLACE, oneTimeResetRequest)
-
-            viewLifecycleOwner.lifecycleScope.launch {
-                val workInfo = workManager.getWorkInfoByIdFlow(oneTimeResetRequest.id).first { it.state.isFinished }
-                if (workInfo.state == WorkInfo.State.SUCCEEDED) {
-                    Log.d(LOG_LABEL, "Воркер успешно завершил работу. Обновляем UI.")
-                    viewModel.loadMyHabits()
-                } else {
-                    Log.d(LOG_LABEL, "Воркер завершился с ошибкой или был отменен.")
-                    Toast.makeText(requireContext(), "Не удалось сбросить привычки", Toast.LENGTH_SHORT).show()
-                }
-            }
-        }
-        // --- КОНЕЦ ВРЕМЕННОГО КОДА --- //
     }
 
-    private fun observeViewModel() {
+    private fun observeViewModels() {
         viewLifecycleOwner.lifecycleScope.launch {
-            viewModel.myHabits.collect { newHabitsList ->
-                Log.d(LOG_LABEL, "Получено обновление. Новый список: ${newHabitsList.size} элементов.")
+            habitsViewModel.myHabits.collect { newHabitsList ->
                 myHabitsAdapter.submitList(newHabitsList)
                 val doneCount = newHabitsList.count { it.isCompleted }
                 binding.infoLabel.text = "Сегодня: $doneCount из ${newHabitsList.size} привычек"
@@ -98,14 +71,18 @@ class MyHabitsFragment : Fragment() {
         }
 
         viewLifecycleOwner.lifecycleScope.launch {
-            viewModel.showStreakToast.collectLatest {
-                Toast.makeText(requireContext(), "Вы молодец!", Toast.LENGTH_SHORT).show()
+            userViewModel.experienceEvents.collect {
+                when (it) {
+                    is ExperienceEvent.LevelUp -> showLevelUpDialog(it.newLevel)
+                    is ExperienceEvent.AllHabitsDone -> showAllHabitsDoneSnackbar()
+                    is ExperienceEvent.StreakSaved -> showStreakSavedSnackbar(it.newStreak)
+                }
             }
         }
 
         childFragmentManager.setFragmentResultListener("requestKey", this) { _, bundle ->
             if (bundle.getBoolean("habitsUpdated")) {
-                viewModel.loadMyHabits()
+                habitsViewModel.loadMyHabits()
             }
         }
     }
@@ -118,15 +95,33 @@ class MyHabitsFragment : Fragment() {
                 .setMessage(dialogMessage)
                 .setNegativeButton("Отмена", null)
                 .setPositiveButton("Да") { _, _ ->
-                    viewModel.updateHabitState(habit.id, true)
+                    habitsViewModel.updateHabitState(habit.id, true)
+                    userViewModel.completeHabit(habit.id, habit.baseExp)
                 }
                 .show()
         }
     }
 
+    private fun showLevelUpDialog(newLevel: Int) {
+        MaterialAlertDialogBuilder(requireContext())
+            .setTitle("Новый уровень!")
+            .setMessage("Поздравляем! Вы достигли ${newLevel}-го уровня.")
+            .setPositiveButton("Отлично!", null)
+            .show()
+    }
+
+    private fun showAllHabitsDoneSnackbar() {
+        Snackbar.make(binding.root, "Отличная работа! Все привычки на сегодня выполнены!", Snackbar.LENGTH_LONG).show()
+    }
+
+    private fun showStreakSavedSnackbar(newStreak: Int) {
+        val message = "Ваша серия из $newStreak дней сохранена! Так держать!"
+        Snackbar.make(binding.root, message, Snackbar.LENGTH_LONG).show()
+    }
+
     override fun onResume() {
         super.onResume()
-        viewModel.loadMyHabits()
+        habitsViewModel.loadMyHabits()
     }
 
     override fun onDestroyView() {
