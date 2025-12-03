@@ -20,7 +20,7 @@ class MyHabitsRecyclerViewAdapter(
         // Kinda like in the onCreate method
 
         fun bind(habit: Habit) {
-            binding.name.text = habit.title
+            binding.name.text = habit.icon + habit.title
             binding.description.text = habit.description
 
             updateCompletedState(habit.isCompleted)

@@ -2,6 +2,7 @@ package com.example.ecotracker.presentation.viewmodels
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.ecotracker.data.model.Habit
 import com.example.ecotracker.data.model.User
 import com.example.ecotracker.data.repository.UserRepository
 import com.example.ecotracker.domain.util.Result
@@ -49,15 +50,15 @@ class UserViewModel @Inject constructor(
         }
     }
 
-    fun completeHabit(habitId: String, habitBaseExp: Int) {
+    fun completeHabit(habit: Habit) {
         val currentUser = (_userState.value as? UserState.Success)?.user ?: return
-        if (currentUser.completedHabits.contains(habitId)) return
+        if (currentUser.completedHabits.contains(habit.id)) return
 
         val wasFirstHabitOfTheDay = currentUser.completedHabits.isEmpty()
 
-        // Add experience and calculate new level with progressive difficulty
+        // Обновляем опыт и уровень
         val oldLevel = currentUser.level
-        val newExperience = currentUser.experience + habitBaseExp
+        val newExperience = currentUser.experience + habit.baseExp
         val newLevel = calculateLevelForXp(newExperience)
 
         viewModelScope.launch {
@@ -66,7 +67,7 @@ class UserViewModel @Inject constructor(
             }
         }
 
-        // Update streak if it was the first habit
+        // Обновляем серию
         val newStreak = if (wasFirstHabitOfTheDay) currentUser.streak + 1 else currentUser.streak
         if (wasFirstHabitOfTheDay && newStreak > 0) {
             viewModelScope.launch {
@@ -75,15 +76,19 @@ class UserViewModel @Inject constructor(
         }
         val newRecord = if (newStreak > currentUser.record) newStreak else currentUser.record
 
-        // Add to completed list
-        val updatedCompletedHabits = currentUser.completedHabits + habitId
+        // Обновляем список выполненных привычек
+        val updatedCompletedHabits = currentUser.completedHabits + habit.id
 
+        // ИСПРАВЛЕНИЕ: Обновляем новые поля статистики
         val updatedUser = currentUser.copy(
             experience = newExperience,
             level = newLevel,
             completedHabits = ArrayList(updatedCompletedHabits),
             streak = newStreak,
-            record = newRecord
+            record = newRecord,
+            co2Reduction = currentUser.co2Reduction + habit.co2Reduction,
+            wasteDisposal = currentUser.wasteDisposal + habit.wasteDisposal,
+            waterRescue = currentUser.waterRescue + habit.waterRescue
         )
 
         updateUser(updatedUser)

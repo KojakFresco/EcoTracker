@@ -71,11 +71,11 @@ class MyHabitsFragment : Fragment() {
         }
 
         viewLifecycleOwner.lifecycleScope.launch {
-            userViewModel.experienceEvents.collect {
-                when (it) {
-                    is ExperienceEvent.LevelUp -> showLevelUpDialog(it.newLevel)
+            userViewModel.experienceEvents.collect { event ->
+                when (event) {
+                    is ExperienceEvent.LevelUp -> showLevelUpDialog(event.newLevel)
                     is ExperienceEvent.AllHabitsDone -> showAllHabitsDoneSnackbar()
-                    is ExperienceEvent.StreakSaved -> showStreakSavedSnackbar(it.newStreak)
+                    is ExperienceEvent.StreakSaved -> showStreakSavedSnackbar(event.newStreak)
                 }
             }
         }
@@ -96,7 +96,7 @@ class MyHabitsFragment : Fragment() {
                 .setNegativeButton("Отмена", null)
                 .setPositiveButton("Да") { _, _ ->
                     habitsViewModel.updateHabitState(habit.id, true)
-                    userViewModel.completeHabit(habit.id, habit.baseExp)
+                    userViewModel.completeHabit(habit)
                 }
                 .show()
         }

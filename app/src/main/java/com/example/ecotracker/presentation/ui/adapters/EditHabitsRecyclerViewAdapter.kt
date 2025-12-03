@@ -22,7 +22,7 @@ class EditHabitsRecyclerViewAdapter(
 
     override fun onBindViewHolder(holder: EditHabitsViewHolder, position: Int) {
         val habit = habits[position]
-        holder.name.text = habit.title
+        holder.name.text = habit.icon + habit.title
 
         if (habit.isAdded) {
             holder.addButton.setImageResource(R.drawable.icon_close)

@@ -8,6 +8,8 @@ data class Habit(
     val icon: String = "",
     val baseExp: Int = 0,
     val co2Reduction: Float = 0.0f,
+    val wasteDisposal: Float = 0.0f,
+    val waterRescue: Float = 0.0f,
     val difficulty: String = "",
     val frequency: String = "",
     var isCompleted: Boolean = false,
