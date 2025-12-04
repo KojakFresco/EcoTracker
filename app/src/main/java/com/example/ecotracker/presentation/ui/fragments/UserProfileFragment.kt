@@ -1,22 +1,28 @@
 package com.example.ecotracker.presentation.ui.fragments
 
 import android.app.AlertDialog
+import android.content.DialogInterface
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.EditText
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.ecotracker.R
 import com.example.ecotracker.data.model.User
 import com.example.ecotracker.databinding.FragmentUserProfileBinding
 import com.example.ecotracker.presentation.ui.adapters.AvatarAdapter
+import com.example.ecotracker.presentation.viewmodels.AuthViewModel
+import com.example.ecotracker.presentation.viewmodels.AuthState
 import com.example.ecotracker.presentation.viewmodels.UserState
 import com.example.ecotracker.presentation.viewmodels.UserViewModel
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 
@@ -27,8 +33,8 @@ class UserProfileFragment : Fragment() {
     private val binding get() = _binding!!
 
     private val userViewModel: UserViewModel by activityViewModels()
+    private val authViewModel: AuthViewModel by activityViewModels()
 
-    // ИСПРАВЛЕНИЕ: Динамически загружаем аватарки, чтобы не менять код при добавлении новых
     private val avatarResources: List<Int> by lazy { loadAvatarResources() }
 
     override fun onCreateView(
@@ -43,10 +49,15 @@ class UserProfileFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         observeUserState()
+        observeAuthState()
 
         binding.editProfileButton.setOnClickListener {
             val currentUser = (userViewModel.userState.value as? UserState.Success)?.user
             currentUser?.let { showEditProfileDialog(it) }
+        }
+
+        binding.signOutButton.setOnClickListener {
+            showSignOutConfirmationDialog()
         }
     }
 
@@ -57,6 +68,30 @@ class UserProfileFragment : Fragment() {
                     is UserState.Success -> updateUi(state.user)
                     is UserState.Loading -> { /* Можно показать ProgressBar */ }
                     is UserState.Error -> { /* Можно показать ошибку */ }
+                }
+            }
+        }
+    }
+
+    private fun showSignOutConfirmationDialog() {
+        val dialog = MaterialAlertDialogBuilder(requireContext())
+            .setTitle("Выход из аккаунта")
+            .setMessage("Вы уверены, что хотите выйти?")
+            .setNegativeButton("Отмена", null)
+            .setPositiveButton("Выйти") { _, _ ->
+                authViewModel.signOut()
+            }
+            .show()
+
+        val positiveButton = dialog.getButton(DialogInterface.BUTTON_POSITIVE)
+        positiveButton?.setTextColor(ContextCompat.getColor(requireContext(), R.color.red_align))
+    }
+
+    private fun observeAuthState() {
+        viewLifecycleOwner.lifecycleScope.launch {
+            authViewModel.authState.collect { state ->
+                if (state is AuthState.Unauthenticated) {
+                    findNavController().navigate(R.id.action_global_authFragment)
                 }
             }
         }

@@ -14,7 +14,6 @@ class AvatarAdapter(
     private val onAvatarSelected: (Int) -> Unit
 ) : RecyclerView.Adapter<AvatarAdapter.AvatarViewHolder>() {
 
-    // Храним ID ресурса выбранной аватарки
     private var selectedAvatarResId = initialSelection
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): AvatarViewHolder {
@@ -34,7 +33,11 @@ class AvatarAdapter(
         }
 
         holder.itemView.setOnClickListener {
-            val clickedAvatarResId = avatars[holder.adapterPosition]
+            val clickedPosition = holder.bindingAdapterPosition
+            if (clickedPosition == RecyclerView.NO_POSITION) {
+                return@setOnClickListener
+            }
+            val clickedAvatarResId = avatars[clickedPosition]
 
             if (selectedAvatarResId != clickedAvatarResId) {
                 val oldSelectedIndex = avatars.indexOf(selectedAvatarResId)

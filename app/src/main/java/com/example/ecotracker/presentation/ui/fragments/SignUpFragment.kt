@@ -116,7 +116,9 @@ class SignUpFragment : Fragment() {
         return isValid
     }
 
-    private fun showError(message: String) {
+    private fun showError(messageKey: String) {
+        val resId = resources.getIdentifier(messageKey, "string", requireContext().packageName)
+        val message = if (resId != 0) getString(resId) else messageKey
         Snackbar.make(binding.root, message, Snackbar.LENGTH_LONG).show()
     }
 
