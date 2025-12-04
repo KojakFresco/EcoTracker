@@ -2,21 +2,17 @@ package com.example.ecotracker.presentation.ui.fragments
 
 import android.app.Dialog
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.FrameLayout
-import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.example.ecotracker.LOG_LABEL
 import com.example.ecotracker.presentation.ui.adapters.EditHabitsRecyclerViewAdapter
 import com.example.ecotracker.databinding.FragmentEditHabitsBinding
 import com.example.ecotracker.presentation.viewmodels.HabitsViewModel
-import com.example.ecotracker.presentation.viewmodels.UserViewModel
 import com.google.android.material.R
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialog
@@ -31,7 +27,6 @@ class EditHabitsFragment : BottomSheetDialogFragment() {
     private val binding get() = _binding!!
 
     private val habitsViewModel: HabitsViewModel by viewModels()
-    private val userViewModel: UserViewModel by activityViewModels()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -46,7 +41,6 @@ class EditHabitsFragment : BottomSheetDialogFragment() {
 
         val recyclerView: RecyclerView = binding.habitsRecycler
 
-        // Передаем в адаптер лямбду, которая будет вызывать метод ViewModel
         val adapter = EditHabitsRecyclerViewAdapter(ArrayList()) { habitId ->
             habitsViewModel.toggleHabitSelection(habitId)
         }
@@ -56,7 +50,6 @@ class EditHabitsFragment : BottomSheetDialogFragment() {
 
         viewLifecycleOwner.lifecycleScope.launch {
             habitsViewModel.habits.collect { newHabitsList ->
-                Log.d(LOG_LABEL, "Habits updated. New list size: ${newHabitsList.size}")
                 adapter.updateHabits(newHabitsList)
             }
         }
@@ -67,14 +60,11 @@ class EditHabitsFragment : BottomSheetDialogFragment() {
         }
 
         binding.btnSave.setOnClickListener {
-            for (item in habitsViewModel.habits.value) {
-                habitsViewModel.saveIsHabitInUse(item.id, item.isAdded)
-            }
-
             val selectedHabitIds = habitsViewModel.habits.value
                 .filter { it.isAdded }
                 .map { it.id }
-            userViewModel.updateSelectedHabits(selectedHabitIds)
+
+            habitsViewModel.saveSelectedHabits(selectedHabitIds)
 
             val result = Bundle().apply {
                 putBoolean("habitsUpdated", true)
@@ -83,7 +73,6 @@ class EditHabitsFragment : BottomSheetDialogFragment() {
 
             dismiss()
         }
-
     }
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {

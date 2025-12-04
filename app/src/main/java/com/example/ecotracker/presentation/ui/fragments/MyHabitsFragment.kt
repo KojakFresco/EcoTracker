@@ -1,7 +1,6 @@
 package com.example.ecotracker.presentation.ui.fragments
 
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -10,12 +9,12 @@ import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.example.ecotracker.R
 import com.example.ecotracker.data.model.Habit
 import com.example.ecotracker.databinding.FragmentMyHabitsBinding
 import com.example.ecotracker.presentation.ui.adapters.MyHabitsRecyclerViewAdapter
 import com.example.ecotracker.presentation.viewmodels.ExperienceEvent
 import com.example.ecotracker.presentation.viewmodels.HabitsViewModel
+import com.example.ecotracker.presentation.viewmodels.UserState
 import com.example.ecotracker.presentation.viewmodels.UserViewModel
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
@@ -63,6 +62,14 @@ class MyHabitsFragment : Fragment() {
 
     private fun observeViewModels() {
         viewLifecycleOwner.lifecycleScope.launch {
+            userViewModel.userState.collect { userState ->
+                if (userState is UserState.Success) {
+                    habitsViewModel.loadMyHabits()
+                }
+            }
+        }
+
+        viewLifecycleOwner.lifecycleScope.launch {
             habitsViewModel.myHabits.collect { newHabitsList ->
                 myHabitsAdapter.submitList(newHabitsList)
                 val doneCount = newHabitsList.count { it.isCompleted }
@@ -95,7 +102,6 @@ class MyHabitsFragment : Fragment() {
                 .setMessage(dialogMessage)
                 .setNegativeButton("Отмена", null)
                 .setPositiveButton("Да") { _, _ ->
-                    habitsViewModel.updateHabitState(habit.id, true)
                     userViewModel.completeHabit(habit)
                 }
                 .show()
@@ -119,10 +125,13 @@ class MyHabitsFragment : Fragment() {
         Snackbar.make(binding.root, message, Snackbar.LENGTH_LONG).show()
     }
 
+    // Этот метод теперь не нужен, так как `userState.collect` делает то же самое, но надежнее
+    /*
     override fun onResume() {
         super.onResume()
         habitsViewModel.loadMyHabits()
     }
+    */
 
     override fun onDestroyView() {
         super.onDestroyView()

@@ -28,12 +28,8 @@ class UserProfileFragment : Fragment() {
 
     private val userViewModel: UserViewModel by activityViewModels()
 
-    // Определяем список аватарок здесь, чтобы он был доступен во всем фрагменте
-    private val avatarList = listOf(
-        1 to R.drawable.avatar_1,
-        2 to R.drawable.avatar_2,
-        3 to R.drawable.avatar_3
-    )
+    // ИСПРАВЛЕНИЕ: Динамически загружаем аватарки, чтобы не менять код при добавлении новых
+    private val avatarResources: List<Int> by lazy { loadAvatarResources() }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -81,7 +77,6 @@ class UserProfileFragment : Fragment() {
         nameEditText.setText(currentUser.name)
         var selectedAvatarId = currentUser.selectedAvatar
 
-        val avatarResources = avatarList.map { it.second }
         val currentAvatarRes = getAvatarResourceId(currentUser.selectedAvatar)
 
         val adapter = AvatarAdapter(avatarResources, currentAvatarRes) { selectedResId ->
@@ -102,15 +97,23 @@ class UserProfileFragment : Fragment() {
             .show()
     }
 
-    // Получить ресурс по ID (1, 2, 3...)
     private fun getAvatarResourceId(avatarId: Int): Int {
-        return avatarList.find { it.first == avatarId }?.second ?: R.mipmap.ic_launcher
+        val index = avatarId - 1
+        return avatarResources.getOrNull(index) ?: R.mipmap.ic_launcher
     }
 
-    // Получить ID (1, 2, 3...) по ресурсу
     private fun getAvatarId(resourceId: Int): Int {
-        return avatarList.find { it.second == resourceId }?.first ?: 1
+        val index = avatarResources.indexOf(resourceId)
+        return if (index != -1) index + 1 else 1
     }
+
+    private fun loadAvatarResources(): List<Int> {
+        return R.drawable::class.java.fields
+            .filter { it.name.startsWith("avatar_") }
+            .sortedBy { it.name }
+            .map { it.getInt(null) }
+    }
+
 
     override fun onDestroyView() {
         super.onDestroyView()

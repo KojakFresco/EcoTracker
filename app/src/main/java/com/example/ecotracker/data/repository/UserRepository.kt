@@ -9,6 +9,7 @@ import androidx.work.WorkManager
 import com.example.ecotracker.data.model.User
 import com.example.ecotracker.domain.util.Result
 import com.example.ecotracker.workers.SyncUserWorker
+import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.Query
@@ -17,9 +18,8 @@ import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
 import javax.inject.Singleton
 
-// Публичная модель данных для таблицы лидеров
 data class PublicUser(
-    var id: String = "", // <-- Добавили ID
+    var id: String = "",
     val name: String = "",
     val level: Int = 0,
     val experience: Int = 0,
@@ -30,35 +30,43 @@ data class PublicUser(
 class UserRepository @Inject constructor(
     @ApplicationContext private val context: Context,
     private val firestore: FirebaseFirestore,
-    private val prefsRepository: PreferencesRepository
+    private val prefsRepository: PreferencesRepository,
+    private val firebaseAuth: FirebaseAuth
 ) {
 
-    suspend fun createUser(userId: String, user: User): Result<Unit> = try {
-        val publicUser = PublicUser(
-            name = user.name,
-            level = user.level,
-            experience = user.experience,
-            selectedAvatar = user.selectedAvatar
-        )
+    private val currentUserId: String?
+        get() = firebaseAuth.currentUser?.uid
 
-        val userDocRef = firestore.collection("users").document(userId)
-        val leaderboardDocRef = firestore.collection("leaderboard").document(userId)
+    suspend fun createUser(user: User): Result<Unit> {
+        val userId = currentUserId ?: return Result.Error(Exception("User not logged in"))
+        return try {
+            val publicUser = PublicUser(
+                name = user.name,
+                level = user.level,
+                experience = user.experience,
+                selectedAvatar = user.selectedAvatar
+            )
 
-        firestore.batch()
-            .set(userDocRef, user)
-            .set(leaderboardDocRef, publicUser)
-            .commit()
-            .await()
+            val userDocRef = firestore.collection("users").document(userId)
+            val leaderboardDocRef = firestore.collection("leaderboard").document(userId)
 
-        prefsRepository.saveCachedUserId(userId)
-        prefsRepository.saveCachedUserObject(user)
+            firestore.batch()
+                .set(userDocRef, user)
+                .set(leaderboardDocRef, publicUser)
+                .commit()
+                .await()
 
-        Result.Success(Unit)
-    } catch (e: Exception) {
-        Result.Error(e)
+            prefsRepository.saveCachedUserId(userId)
+            prefsRepository.saveCachedUserObject(user)
+
+            Result.Success(Unit)
+        } catch (e: Exception) {
+            Result.Error(e)
+        }
     }
 
-    suspend fun getUser(userId: String): Result<User> {
+    suspend fun getUser(): Result<User> {
+        val userId = currentUserId ?: return Result.Error(Exception("User not logged in"))
         return try {
             val document = firestore.collection("users").document(userId).get().await()
             if (document.exists()) {
@@ -81,7 +89,8 @@ class UserRepository @Inject constructor(
         }
     }
 
-    suspend fun updateUser(userId: String, user: User): Result<Unit> {
+    suspend fun updateUser(user: User): Result<Unit> {
+        val userId = currentUserId ?: return Result.Error(Exception("User not logged in"))
         prefsRepository.saveCachedUserId(userId)
         prefsRepository.saveCachedUserObject(user)
         Log.i("UserRepository", "User updated locally. Enqueuing sync job.")
@@ -97,7 +106,6 @@ class UserRepository @Inject constructor(
                 .get()
                 .await()
 
-            // ИСПРАВЛЕНИЕ: Преобразуем документы в объекты, добавляя ID
             val users = documents.map { document ->
                 document.toObject(PublicUser::class.java).apply { id = document.id }
             }
@@ -108,7 +116,8 @@ class UserRepository @Inject constructor(
         }
     }
 
-    suspend fun updateLastLoginTimestamp(userId: String) {
+    suspend fun updateLastLoginTimestamp() {
+        val userId = currentUserId ?: return
         try {
             firestore.collection("users")
                 .document(userId)
@@ -131,9 +140,12 @@ class UserRepository @Inject constructor(
         WorkManager.getInstance(context).enqueue(syncRequest)
     }
 
-    suspend fun userExists(userId: String): Boolean = try {
-        firestore.collection("users").document(userId).get().await().exists()
-    } catch (e: Exception) {
-        prefsRepository.loadCachedUserId() == userId
+    suspend fun userExists(): Boolean {
+        val userId = currentUserId ?: return false
+        return try {
+            firestore.collection("users").document(userId).get().await().exists()
+        } catch (e: Exception) {
+            prefsRepository.loadCachedUserId() == userId
+        }
     }
 }

@@ -96,7 +96,7 @@ class StatisticsFragment : Fragment() {
         val co2Reduced = user.co2Reduction.roundToInt()
         val wasteRecycled = user.wasteDisposal.roundToInt()
 
-        val bathsSaved = (waterSaved / avgShowerLiters)
+        val bathsSaved = (user.waterRescue / avgShowerLiters)
         val carKmSaved = (co2Reduced * avgCarKmPerKgCo2)
         val paperSaved = (wasteRecycled * avgPaperSheetsPerKg)
 

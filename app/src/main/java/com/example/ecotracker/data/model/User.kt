@@ -1,5 +1,7 @@
 package com.example.ecotracker.data.model
 
+import com.google.firebase.Timestamp
+
 data class User(
     var name: String = "",
     var email: String = "",
@@ -12,5 +14,6 @@ data class User(
     var completedHabits: ArrayList<String> = ArrayList(),
     var co2Reduction: Float = 0.0f,
     var wasteDisposal: Float = 0.0f,
-    var waterRescue: Float = 0.0f
+    var waterRescue: Float = 0.0f,
+    var lastActiveDate: Timestamp? = null
 )

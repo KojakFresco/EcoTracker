@@ -47,7 +47,6 @@ class AuthRepository @Inject constructor(
 
         // Изменили вызов userRepository.createUser
         userRepository.createUser(
-            userId,
             User(
                 name = signUpData.name,
                 email = signUpData.email,
@@ -73,7 +72,7 @@ class AuthRepository @Inject constructor(
         ).await()
 
         authResult.user?.uid?.let { userId ->
-            userRepository.updateLastLoginTimestamp(userId)
+            userRepository.updateLastLoginTimestamp()
         }
 
         AuthResult.Success(authResult.user)

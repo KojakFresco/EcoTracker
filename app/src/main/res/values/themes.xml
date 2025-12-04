@@ -33,12 +33,12 @@
     </style>
 
     <style name="FabShape" parent="ShapeAppearance.Material3.SmallComponent">
-
         <item name="cornerFamily">rounded</item>
         <item name="cornerSize">24dp</item>
     </style>
 
-    <style name="CircleImageView">
+    <!-- ИСПРАВЛЕНИЕ: Добавляем стиль для круглых аватарок -->
+    <style name="CircleImageView" parent="">
         <item name="cornerFamily">rounded</item>
         <item name="cornerSize">50%</item>
     </style>
