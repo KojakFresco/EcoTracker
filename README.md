@@ -23,6 +23,6 @@
 - **Архитектура:** Clean Architecture + MVVM
 - **DI:** Hilt для управления зависимостями
 - **Локальная БД:** Room для кэширования
-- **Backend:** Firebase (Auth, Firestore, Cloud Messaging)
+- **Backend:** Firebase (Auth, Firestore)
 - **UI:** Jetpack Compose, Navigation Component
 - **Сборка:** Gradle Kotlin DSL
