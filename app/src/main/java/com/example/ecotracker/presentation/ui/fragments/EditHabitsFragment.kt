@@ -6,6 +6,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.FrameLayout
+import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -13,6 +14,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.ecotracker.presentation.ui.adapters.EditHabitsRecyclerViewAdapter
 import com.example.ecotracker.databinding.FragmentEditHabitsBinding
 import com.example.ecotracker.presentation.viewmodels.HabitsViewModel
+import com.example.ecotracker.presentation.viewmodels.UserViewModel
 import com.google.android.material.R
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialog
@@ -27,6 +29,7 @@ class EditHabitsFragment : BottomSheetDialogFragment() {
     private val binding get() = _binding!!
 
     private val habitsViewModel: HabitsViewModel by viewModels()
+    private val userViewModel: UserViewModel by activityViewModels()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -65,6 +68,7 @@ class EditHabitsFragment : BottomSheetDialogFragment() {
                 .map { it.id }
 
             habitsViewModel.saveSelectedHabits(selectedHabitIds)
+            userViewModel.updateSelectedHabits(selectedHabitIds)
 
             val result = Bundle().apply {
                 putBoolean("habitsUpdated", true)
