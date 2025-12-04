@@ -105,7 +105,12 @@ class SignInFragment : Fragment() {
     }
 
     private fun showError(messageKey: String) {
-        val resId = resources.getIdentifier(messageKey, "string", requireContext().packageName)
+        val resId = when (messageKey) {
+            "error_invalid_credentials" -> R.string.error_invalid_credentials
+            "error_network_request_failed" -> R.string.error_network_request_failed
+            "error_unknown" -> R.string.error_unknown
+            else -> 0
+        }
         val message = if (resId != 0) getString(resId) else messageKey
         Snackbar.make(binding.root, message, Snackbar.LENGTH_LONG).show()
     }

@@ -117,7 +117,14 @@ class SignUpFragment : Fragment() {
     }
 
     private fun showError(messageKey: String) {
-        val resId = resources.getIdentifier(messageKey, "string", requireContext().packageName)
+        val resId = when (messageKey) {
+            "error_weak_password" -> R.string.error_weak_password
+            "error_email_already_in_use" -> R.string.error_email_already_in_use
+            "error_invalid_email" -> R.string.error_invalid_email
+            "error_network_request_failed" -> R.string.error_network_request_failed
+            "error_unknown" -> R.string.error_unknown
+            else -> 0
+        }
         val message = if (resId != 0) getString(resId) else messageKey
         Snackbar.make(binding.root, message, Snackbar.LENGTH_LONG).show()
     }
