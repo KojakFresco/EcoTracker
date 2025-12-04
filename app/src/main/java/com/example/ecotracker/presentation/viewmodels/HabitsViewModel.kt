@@ -45,7 +45,21 @@ class HabitsViewModel @Inject constructor(
 
     fun loadHabits() {
         viewModelScope.launch(coroutineExceptionHandler) {
-            _habits.value = habitRepository.getHabits()
+            _habits.value = sortForEdit(habitRepository.getHabits())
+        }
+    }
+
+    fun toggleHabitSelection(habitId: String) {
+        val currentList = _habits.value
+        val habitIndex = currentList.indexOfFirst { it.id == habitId }
+
+        if (habitIndex != -1) {
+            val habitToUpdate = currentList[habitIndex]
+            val updatedHabit = habitToUpdate.copy(isAdded = !habitToUpdate.isAdded)
+
+            val newList = currentList.toMutableList()
+            newList[habitIndex] = updatedHabit
+            _habits.value = sortForEdit(newList)
         }
     }
 
@@ -57,7 +71,7 @@ class HabitsViewModel @Inject constructor(
                 preferencesRepo.loadBoolean(HABIT_IN_USE_PREFIX + habit.id, false)
             }
 
-            _myHabits.value = sortHabits(filteredHabits)
+            _myHabits.value = sortMyHabits(filteredHabits)
         }
     }
 
@@ -77,7 +91,7 @@ class HabitsViewModel @Inject constructor(
                 val updatedHabit = currentList[habitIndex].copy(isCompleted = isChecked)
                 val newList = currentList.toMutableList()
                 newList[habitIndex] = updatedHabit
-                _myHabits.value = sortHabits(newList)
+                _myHabits.value = sortMyHabits(newList)
             }
         }
     }
@@ -86,7 +100,6 @@ class HabitsViewModel @Inject constructor(
         val currentTime = ZonedDateTime.now(ZoneId.systemDefault())
         val lastRewardTimeMillis = preferencesRepo.loadLong(KEY_LAST_STREAK_TIME, 0L)
 
-        // Если сегодня еще не было награды
         if (lastRewardTimeMillis == 0L || !isSameDay(currentTime, lastRewardTimeMillis)) {
             val lastRewardTime = ZonedDateTime.ofInstant(Instant.ofEpochMilli(lastRewardTimeMillis), ZoneId.systemDefault())
             var counter = preferencesRepo.loadInt(KEY_STREAK_COUNTER, 0)
@@ -97,7 +110,6 @@ class HabitsViewModel @Inject constructor(
                 counter = 1
             }
 
-            // Сравниваем текущий стрик с рекордом
             val currentRecord = preferencesRepo.loadInt(KEY_STREAK_RECORD, 0)
             if (counter > currentRecord) {
                 preferencesRepo.saveInt(KEY_STREAK_RECORD, counter)
@@ -128,10 +140,14 @@ class HabitsViewModel @Inject constructor(
         return preferencesRepo.loadBoolean(habitKey, false)
     }
 
-    private fun sortHabits(habits: List<Habit>): List<Habit> {
+    private fun sortMyHabits(habits: List<Habit>): List<Habit> {
         return habits.sortedWith(
             compareBy<Habit> { it.isCompleted }
                 .thenBy { it.title }
         )
+    }
+
+    private fun sortForEdit(habits: List<Habit>): List<Habit> {
+        return habits.sortedByDescending { it.isAdded }
     }
 }

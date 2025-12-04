@@ -8,7 +8,7 @@ class NavigationManager {
 
     fun navigateToMainFragment(fragmentManager: FragmentManager) {
         fragmentManager.beginTransaction()
-            .replace(R.id.fragmentContainer, MainFragment(), "main")
+            .replace(R.id.nav_host_fragment, MainFragment(), "main")
             .commit()
     }
 

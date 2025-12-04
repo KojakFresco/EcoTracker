@@ -20,7 +20,9 @@
         <activity
             android:name=".presentation.ui.activity.MainActivity"
             android:configChanges="keyboardHidden|orientation|screenSize"
-            android:exported="true">
+            android:exported="true"
+            android:theme="@style/Theme.App.Starting"
+            android:windowSoftInputMode="adjustResize"> <!-- Вот это изменение -->
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

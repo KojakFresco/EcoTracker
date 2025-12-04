@@ -7,6 +7,7 @@ import com.example.ecotracker.domain.managers.PermissionManager
 import com.example.ecotracker.domain.managers.NavigationManager
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.gson.Gson
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -47,5 +48,11 @@ object AppModule {
     @Singleton
     fun provideFirebaseAuth(): FirebaseAuth {
         return FirebaseAuth.getInstance()
+    }
+
+    @Provides
+    @Singleton
+    fun provideGson(): Gson {
+        return Gson()
     }
 }

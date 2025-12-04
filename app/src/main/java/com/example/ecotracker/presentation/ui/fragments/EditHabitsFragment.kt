@@ -7,6 +7,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.FrameLayout
+import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -15,6 +16,7 @@ import com.example.ecotracker.LOG_LABEL
 import com.example.ecotracker.presentation.ui.adapters.EditHabitsRecyclerViewAdapter
 import com.example.ecotracker.databinding.FragmentEditHabitsBinding
 import com.example.ecotracker.presentation.viewmodels.HabitsViewModel
+import com.example.ecotracker.presentation.viewmodels.UserViewModel
 import com.google.android.material.R
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialog
@@ -28,14 +30,14 @@ class EditHabitsFragment : BottomSheetDialogFragment() {
     private var _binding: FragmentEditHabitsBinding? = null
     private val binding get() = _binding!!
 
-    private val viewModel: HabitsViewModel by viewModels()
+    private val habitsViewModel: HabitsViewModel by viewModels()
+    private val userViewModel: UserViewModel by activityViewModels()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        _binding = FragmentEditHabitsBinding
-            .inflate(inflater, container, false)
+        _binding = FragmentEditHabitsBinding.inflate(inflater, container, false)
         return binding.root
     }
 
@@ -44,29 +46,38 @@ class EditHabitsFragment : BottomSheetDialogFragment() {
 
         val recyclerView: RecyclerView = binding.habitsRecycler
 
-        val adapter = EditHabitsRecyclerViewAdapter(requireActivity(), ArrayList())
+        // Передаем в адаптер лямбду, которая будет вызывать метод ViewModel
+        val adapter = EditHabitsRecyclerViewAdapter(ArrayList()) { habitId ->
+            habitsViewModel.toggleHabitSelection(habitId)
+        }
+
         recyclerView.adapter = adapter
         recyclerView.layoutManager = LinearLayoutManager(activity)
 
         viewLifecycleOwner.lifecycleScope.launch {
-            viewModel.habits.collect { newHabitsList ->
-                // Этот код будет выполняться каждый раз, когда данные в viewModel.habits обновляются
+            habitsViewModel.habits.collect { newHabitsList ->
                 Log.d(LOG_LABEL, "Habits updated. New list size: ${newHabitsList.size}")
                 adapter.updateHabits(newHabitsList)
             }
         }
-        viewModel.loadHabits()
+        habitsViewModel.loadHabits()
 
         binding.closeButton.setOnClickListener {
             dismiss()
         }
 
         binding.btnSave.setOnClickListener {
-            for (item in viewModel.habits.value) {
-                viewModel.saveIsHabitInUse(item.id, item.isAdded)
+            for (item in habitsViewModel.habits.value) {
+                habitsViewModel.saveIsHabitInUse(item.id, item.isAdded)
             }
+
+            val selectedHabitIds = habitsViewModel.habits.value
+                .filter { it.isAdded }
+                .map { it.id }
+            userViewModel.updateSelectedHabits(selectedHabitIds)
+
             val result = Bundle().apply {
-                putBoolean("habitsUpdated", true) // Передаем флаг, что данные обновлены
+                putBoolean("habitsUpdated", true)
             }
             parentFragmentManager.setFragmentResult("requestKey", result)
 
@@ -75,7 +86,6 @@ class EditHabitsFragment : BottomSheetDialogFragment() {
 
     }
 
-    // Этот метод делает окно полноэкранным
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         val dialog = super.onCreateDialog(savedInstanceState)
         dialog.setOnShowListener { dialogInterface ->

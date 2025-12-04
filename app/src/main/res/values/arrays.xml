@@ -9,4 +9,10 @@
         <item>reply</item>
         <item>reply_all</item>
     </string-array>
+
+    <integer-array name="avatars">
+        <item>@drawable/avatar_1</item>
+        <item>@drawable/avatar_2</item>
+        <item>@drawable/avatar_3</item>
+    </integer-array>
 </resources>
