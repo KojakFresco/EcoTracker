@@ -2,7 +2,6 @@
 
 [![Kotlin](https://img.shields.io/badge/Kotlin-1.9.0-blue.svg)](https://kotlinlang.org)
 [![Android](https://img.shields.io/badge/Android-API_24+-green.svg)](https://developer.android.com)
-[![License](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
 Мобильное приложение для формирования и отслеживания экологических привычек с элементами геймификации. Помогает пользователям внедрять устойчивые практики в повседневную жизнь.
 
