@@ -47,12 +47,10 @@ class MyHabitsRecyclerViewAdapter(
         return MyViewHolder(binding)
     }
 
-    // Этот метод onBindViewHolder будет вызываться для ПОЛНОЙ перерисовки
     override fun onBindViewHolder(holder: MyViewHolder, position: Int) {
         holder.bind(getItem(position))
     }
 
-    // А ЭТОТ МЕТОД будет вызываться, когда DiffUtil найдет ИЗМЕНЕНИЯ с PAYLOAD
     override fun onBindViewHolder(holder: MyViewHolder, position: Int, payloads: MutableList<Any>) {
         if (payloads.isEmpty()) {
             super.onBindViewHolder(holder, position, payloads)

@@ -30,6 +30,9 @@ class RatingFragment : Fragment() {
     private val ratingViewModel: RatingViewModel by viewModels()
     private val userViewModel: UserViewModel by activityViewModels()
 
+    // ИСПРАВЛЕНИЕ: Динамически загружаем аватарки
+    private val avatarResources: List<Int> by lazy { loadAvatarResources() }
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -79,11 +82,11 @@ class RatingFragment : Fragment() {
                 "#>20"
             }
 
-            // ИСПРАВЛЕНИЕ: Заменяем имя на "Вы"
             myCard.username.text = getString(R.string.you)
             myCard.xp.text = getString(R.string.xp_format, currentUser.experience)
             myCard.level.text = getString(R.string.level_format, currentUser.level)
-            myCard.avatar.setImageResource(getAvatarResourceId(currentUser.selectedAvatar - 1))
+            // ИСПРАВЛЕНИЕ: Используем новый метод, передавая ID
+            myCard.avatar.setImageResource(getAvatarResourceId(currentUser.selectedAvatar))
 
             myCard.position.setTextColor(ContextCompat.getColor(requireContext(), R.color.green_align))
         }
@@ -95,7 +98,8 @@ class RatingFragment : Fragment() {
                 id = user.id,
                 currentUserId = currentUserId,
                 place = index + 1,
-                avatarId = getAvatarResourceId(user.selectedAvatar - 1),
+                // ИСПРАВЛЕНИЕ: Используем новый метод, передавая ID
+                avatarId = getAvatarResourceId(user.selectedAvatar),
                 name = user.name,
                 xp = user.experience,
                 level = user.level
@@ -103,17 +107,21 @@ class RatingFragment : Fragment() {
         }
     }
 
-    private fun getAvatarResourceId(index: Int): Int {
-        return try {
-            val avatars = resources.obtainTypedArray(R.array.avatars)
-            val safeIndex = if (index >= 0 && index < avatars.length()) index else 0
-            val resourceId = avatars.getResourceId(safeIndex, R.drawable.avatar_1)
-            avatars.recycle()
-            resourceId
-        } catch (e: Exception) {
-            R.drawable.avatar_1
-        }
+    // ИСПРАВЛЕНИЕ: Получаем ресурс по ID (индексу)
+    private fun getAvatarResourceId(avatarId: Int): Int {
+        // ID аватарок начинаются с 1, а индексы в массиве - с 0
+        val index = avatarId - 1
+        return avatarResources.getOrNull(index) ?: R.mipmap.ic_launcher // Возвращаем иконку по умолчанию
     }
+
+    // ИСПРАВЛЕНИЕ: Новая функция для динамической загрузки аватарок
+    private fun loadAvatarResources(): List<Int> {
+        return R.drawable::class.java.fields
+            .filter { it.name.startsWith("avatar_") }
+            .sortedBy { it.name }
+            .map { it.getInt(null) }
+    }
+
 
     override fun onDestroyView() {
         super.onDestroyView()

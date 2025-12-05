@@ -40,7 +40,7 @@ class SplashFragment : Fragment() {
                 findNavController().navigate(R.id.action_splashFragment_to_mainFragment)
             } else {
                 // Пользователь не авторизован, идем на экран входа
-                findNavController().navigate(R.id.action_splashFragment_to_signInFragment)
+                findNavController().navigate(R.id.action_splashFragment_to_authFragment)
             }
         }
     }

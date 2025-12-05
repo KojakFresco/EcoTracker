@@ -91,7 +91,15 @@ class ForgotPasswordFragment : Fragment() {
         }
     }
 
-    private fun showError(message: String) {
+    
+    private fun showError(messageKey: String) {
+        val resId = when (messageKey) {
+            "error_user_not_found" -> R.string.error_user_not_found
+            "error_network_request_failed" -> R.string.error_network_request_failed
+            "error_unknown" -> R.string.error_unknown
+            else -> 0
+        }
+        val message = if (resId != 0) getString(resId) else messageKey
         Snackbar.make(binding.root, message, Snackbar.LENGTH_LONG).show()
     }
 

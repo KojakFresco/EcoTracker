@@ -89,15 +89,15 @@ class StatisticsFragment : Fragment() {
     private fun createStatisticItems(user: User): List<StatisticItem> {
         // Предполагаемые средние значения для расчетов
         val avgShowerLiters = 20
-        val avgCarKmPerKgCo2 = 5
+        val avgCarKmPerKgCo2 = 4.4
         val avgPaperSheetsPerKg = 1
 
         val waterSaved = user.waterRescue.roundToInt()
         val co2Reduced = user.co2Reduction.roundToInt()
         val wasteRecycled = user.wasteDisposal.roundToInt()
 
-        val bathsSaved = (waterSaved / avgShowerLiters)
-        val carKmSaved = (co2Reduced * avgCarKmPerKgCo2)
+        val bathsSaved = (user.waterRescue / avgShowerLiters).roundToInt()
+        val carKmSaved = (co2Reduced * avgCarKmPerKgCo2).roundToInt()
         val paperSaved = (wasteRecycled * avgPaperSheetsPerKg)
 
         return listOf(

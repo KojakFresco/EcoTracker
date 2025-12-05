@@ -1,22 +1,28 @@
 package com.example.ecotracker.presentation.ui.fragments
 
 import android.app.AlertDialog
+import android.content.DialogInterface
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.EditText
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.ecotracker.R
 import com.example.ecotracker.data.model.User
 import com.example.ecotracker.databinding.FragmentUserProfileBinding
 import com.example.ecotracker.presentation.ui.adapters.AvatarAdapter
+import com.example.ecotracker.presentation.viewmodels.AuthViewModel
+import com.example.ecotracker.presentation.viewmodels.AuthState
 import com.example.ecotracker.presentation.viewmodels.UserState
 import com.example.ecotracker.presentation.viewmodels.UserViewModel
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 
@@ -27,13 +33,9 @@ class UserProfileFragment : Fragment() {
     private val binding get() = _binding!!
 
     private val userViewModel: UserViewModel by activityViewModels()
+    private val authViewModel: AuthViewModel by activityViewModels()
 
-    // Определяем список аватарок здесь, чтобы он был доступен во всем фрагменте
-    private val avatarList = listOf(
-        1 to R.drawable.avatar_1,
-        2 to R.drawable.avatar_2,
-        3 to R.drawable.avatar_3
-    )
+    private val avatarResources: List<Int> by lazy { loadAvatarResources() }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -47,10 +49,15 @@ class UserProfileFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         observeUserState()
+        observeAuthState()
 
         binding.editProfileButton.setOnClickListener {
             val currentUser = (userViewModel.userState.value as? UserState.Success)?.user
             currentUser?.let { showEditProfileDialog(it) }
+        }
+
+        binding.signOutButton.setOnClickListener {
+            showSignOutConfirmationDialog()
         }
     }
 
@@ -61,6 +68,30 @@ class UserProfileFragment : Fragment() {
                     is UserState.Success -> updateUi(state.user)
                     is UserState.Loading -> { /* Можно показать ProgressBar */ }
                     is UserState.Error -> { /* Можно показать ошибку */ }
+                }
+            }
+        }
+    }
+
+    private fun showSignOutConfirmationDialog() {
+        val dialog = MaterialAlertDialogBuilder(requireContext())
+            .setTitle("Выход из аккаунта")
+            .setMessage("Вы уверены, что хотите выйти?")
+            .setNegativeButton("Отмена", null)
+            .setPositiveButton("Выйти") { _, _ ->
+                authViewModel.signOut()
+            }
+            .show()
+
+        val positiveButton = dialog.getButton(DialogInterface.BUTTON_POSITIVE)
+        positiveButton?.setTextColor(ContextCompat.getColor(requireContext(), R.color.red_align))
+    }
+
+    private fun observeAuthState() {
+        viewLifecycleOwner.lifecycleScope.launch {
+            authViewModel.authState.collect { state ->
+                if (state is AuthState.Unauthenticated) {
+                    findNavController().navigate(R.id.action_global_authFragment)
                 }
             }
         }
@@ -81,7 +112,6 @@ class UserProfileFragment : Fragment() {
         nameEditText.setText(currentUser.name)
         var selectedAvatarId = currentUser.selectedAvatar
 
-        val avatarResources = avatarList.map { it.second }
         val currentAvatarRes = getAvatarResourceId(currentUser.selectedAvatar)
 
         val adapter = AvatarAdapter(avatarResources, currentAvatarRes) { selectedResId ->
@@ -102,15 +132,23 @@ class UserProfileFragment : Fragment() {
             .show()
     }
 
-    // Получить ресурс по ID (1, 2, 3...)
     private fun getAvatarResourceId(avatarId: Int): Int {
-        return avatarList.find { it.first == avatarId }?.second ?: R.mipmap.ic_launcher
+        val index = avatarId - 1
+        return avatarResources.getOrNull(index) ?: R.mipmap.ic_launcher
     }
 
-    // Получить ID (1, 2, 3...) по ресурсу
     private fun getAvatarId(resourceId: Int): Int {
-        return avatarList.find { it.second == resourceId }?.first ?: 1
+        val index = avatarResources.indexOf(resourceId)
+        return if (index != -1) index + 1 else 1
     }
+
+    private fun loadAvatarResources(): List<Int> {
+        return R.drawable::class.java.fields
+            .filter { it.name.startsWith("avatar_") }
+            .sortedBy { it.name }
+            .map { it.getInt(null) }
+    }
+
 
     override fun onDestroyView() {
         super.onDestroyView()

@@ -1,51 +1,50 @@
-<?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <!-- Уже существующие переводы -->
     <string name="my_habits">Мои привычки</string>
     <string name="statistics">Статистика</string>
     <string name="rating">Рейтинг</string>
     <string name="profile">Профиль</string>
+
     <string name="save">Сохранить</string>
-    <string name="redact_habits">Редактировать привычки</string>
+    <string name="redact_habits">Изменить привычки</string>
+
     <string name="your_level">Ваш уровень</string>
-    <string name="xp_amount">Общий опыт</string>
+    <string name="xp_amount">Количество XP</string>
     <string name="days">дней</string>
     <string name="current_streak">Текущая серия</string>
     <string name="your_record">Ваш рекорд</string>
-
-    <!-- Новые переводы для экранов аутентификации -->
-
-    <!-- Общие -->
     <string name="you">Вы</string>
+
+    <!-- Auth Screens -->
     <string name="hint_email">Электронная почта</string>
     <string name="hint_password">Пароль</string>
-    <string name="hint_name">Имя</string>
-
-    <!-- Экран входа -->
     <string name="button_sign_in">Войти</string>
     <string name="prompt_sign_up">Нет аккаунта? Зарегистрироваться</string>
     <string name="prompt_forgot_password">Забыли пароль?</string>
-
-    <!-- Экран регистрации -->
+    <string name="hint_name">Имя</string>
     <string name="hint_confirm_password">Подтвердите пароль</string>
     <string name="button_sign_up">Зарегистрироваться</string>
     <string name="prompt_sign_in">Уже есть аккаунт? Войти</string>
-
-    <!-- Экран сброса пароля -->
     <string name="title_reset_password">Сброс пароля</string>
-    <string name="description_reset_password">Введите ваш email, и мы вышлем ссылку для сброса пароля</string>
-    <string name="button_send_reset_link">Отправить ссылку</string>
+    <string name="description_reset_password">Введите свой адрес электронной почты, и мы вышлем вам ссылку для сброса пароля</string>
+    <string name="button_send_reset_link">Отправить ссылку для сброса</string>
     <string name="prompt_back_to_sign_in">Назад ко входу</string>
 
-    <!-- Ошибки валидации -->
+    <!-- Validation Errors -->
     <string name="error_email_required">Требуется электронная почта</string>
     <string name="error_password_required">Требуется пароль</string>
     <string name="error_name_required">Требуется имя</string>
-    <string name="error_password_too_short">Пароль должен быть не менее 6 символов</string>
+    <string name="error_password_too_short">Пароль должен содержать не менее 6 символов</string>
     <string name="error_passwords_do_not_match">Пароли не совпадают</string>
-    <string name="error_invalid_email">Введите корректный email</string>
+    <string name="error_invalid_email">Пожалуйста, введите действительный адрес электронной почты</string>
 
-    <!-- Сообщения -->
+    <!-- Firebase Auth Errors -->
+    <string name="error_invalid_credentials">Неверный пароль или адрес электронной почты.</string>
+    <string name="error_user_not_found">Пользователь с таким адресом не найден.</string>
+    <string name="error_email_already_in_use">Этот адрес электронной почты уже используется другим аккаунтом.</string>
+    <string name="error_weak_password">Пароль слишком слабый.</string>
+    <string name="error_network_request_failed">Ошибка сети. Проверьте ваше подключение к интернету.</string>
+    <string name="error_unknown">Произошла неизвестная ошибка. Пожалуйста, попробуйте еще раз.</string>
+
+    <!-- Messages -->
     <string name="message_password_reset_sent">Письмо для сброса пароля отправлено.</string>
-
 </resources>

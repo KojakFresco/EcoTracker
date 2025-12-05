@@ -65,6 +65,14 @@ class PreferencesRepository @Inject constructor(
         }
     }
 
+    // ИСПРАВЛЕНИЕ: Новый метод для очистки кэша пользователя
+    fun clearUserCache() {
+        prefs.edit()
+            .remove(KEY_CACHED_USER_ID)
+            .remove(KEY_CACHED_USER_OBJECT)
+            .apply()
+    }
+
     fun saveDate(name: String, date: ZonedDateTime) {
         val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")
             .withZone(ZoneId.systemDefault())
